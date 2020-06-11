@@ -3,9 +3,10 @@ name = "star-rogue"
 version = "0.1.0"
 authors = ["mick-roper <mick@theropers.co.uk>"]
 edition = "2018"
-build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sdl2 = "0.34.1"
+rltk = { version = "0.7.0" }
+specs = { version = "0.16.1" }
+specs-derive = { version = "0.4.0" }
