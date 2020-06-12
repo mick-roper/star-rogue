@@ -1,6 +1,7 @@
 use rltk::{Rltk, RandomNumberGenerator, BaseMap, Algorithm2D, Point, RGB, Console};
-use super::{Rect};
+use super::{Rect, World, Viewshed, Player};
 use std::cmp::{max, min};
+use specs::join;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
@@ -107,32 +108,4 @@ pub fn new_map(width: i32, height: i32) -> Map {
     }
 
     map
-}
-
-pub fn draw_map(map: &[TileType], ctx: &mut Rltk) {
-    let mut y = 0;
-    let mut x = 0;
-
-    let floor_colour = RGB::from_f32(0.5, 0.5, 0.5);
-    let wall_colour = RGB::from_f32(0.0, 1.0, 0.0);
-    let black = RGB::from_f32(0., 0., 0.);
-    let dot = rltk::to_cp437('.');
-    let hash = rltk::to_cp437('#');
-
-    for tile in map.iter() {
-        match tile {
-            TileType::Floor => {
-                ctx.set(x, y, floor_colour, black, dot);
-            },
-            TileType::Wall => {
-                ctx.set(x, y, wall_colour, black, hash);
-            }
-        }
-
-        x += 1;
-        if x > 79 {
-            x = 0;
-            y += 1;
-        }
-    }
 }

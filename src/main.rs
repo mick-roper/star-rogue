@@ -1,4 +1,4 @@
-use rltk::{Rltk, GameState, Console, RGB};
+use rltk::{Rltk, GameState, Console, RGB, Point};
 use specs::prelude::*;
 
 mod components;
@@ -29,7 +29,7 @@ impl GameState for State {
         self.run_systems();
 
         let map = self.ecs.fetch::<Map>();
-        draw_map(&map.tiles, ctx);
+        draw_map(&self.ecs, ctx);
 
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
@@ -81,4 +81,41 @@ fn main() {
         .build();
 
     rltk::main_loop(context, gs);
+}
+
+fn draw_map(ecs: &World, ctx: &mut Rltk) {
+    let mut viewsheds = ecs.write_storage::<Viewshed>();
+    let mut players = ecs.write_storage::<Player>();
+    let map = ecs.fetch::<Map>();
+
+    for (_player, viewshed) in (&mut players, &mut viewsheds).join() {
+        let mut y = 0;
+        let mut x = 0;
+
+        let floor_colour = RGB::from_f32(0.5, 0.5, 0.5);
+        let wall_colour = RGB::from_f32(0.0, 1.0, 0.0);
+        let black = RGB::from_f32(0., 0., 0.);
+        let dot = rltk::to_cp437('.');
+        let hash = rltk::to_cp437('#');
+
+        for tile in map.tiles.iter() {
+            let pt = Point::new(x, y);
+            if viewshed.visible_tiles.contains(&pt) {
+                match tile {
+                    TileType::Floor => {
+                        ctx.set(x, y, floor_colour, black, dot);
+                    },
+                    TileType::Wall => {
+                        ctx.set(x, y, wall_colour, black, hash);
+                    }
+                }
+            }
+
+            x += 1;
+            if x > 79 {
+                x = 0;
+                y += 1;
+            }
+        }
+    }
 }
