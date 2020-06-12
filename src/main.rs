@@ -53,7 +53,7 @@ fn main() {
         ecs: World::new()
     };
 
-    gs.ecs.insert(new_map_with_rooms());
+    gs.ecs.insert(new_map());
 
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();

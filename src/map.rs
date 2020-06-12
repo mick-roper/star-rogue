@@ -35,6 +35,19 @@ pub fn new_map() -> Vec<TileType> {
 
         if ok {
             add_room_to_map(&new_room, &mut map);
+
+            if !rooms.is_empty() {
+                let (new_x, new_y) = new_room.centre();
+                let (prev_x, prev_y) = rooms[rooms.len() - 1].centre();
+                if rng.range(1, 2) == 1 {
+                    add_horizontal_tunnel(&mut map, prev_x, new_x, prev_y);
+                    add_vertical_tunnel(&mut map, prev_y, new_y, new_x);
+                } else {
+                    add_vertical_tunnel(&mut map, prev_y, new_y, new_x);
+                    add_horizontal_tunnel(&mut map, prev_x, new_x, prev_y);
+                }
+            }
+
             rooms.push(new_room);
         }
     }
