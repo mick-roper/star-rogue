@@ -11,7 +11,7 @@ pub fn xy_idx(x: i32, y: i32) -> usize {
     (y as usize * 80) + x as usize
 }
 
-pub fn new_map() -> Vec<TileType> {
+pub fn new_map() -> (Vec<TileType>, Vec<Rect>) {
     let mut map = vec![TileType::Wall; 80*50];
     let mut rooms: Vec<Rect> = Vec::new();
 
@@ -52,7 +52,7 @@ pub fn new_map() -> Vec<TileType> {
         }
     }
 
-    map
+    (map, rooms)
 }
 
 pub fn draw_map(map: &[TileType], ctx: &mut Rltk) {

@@ -53,7 +53,11 @@ fn main() {
         ecs: World::new()
     };
 
-    gs.ecs.insert(new_map());
+    let (map, rooms) = new_map();
+
+    gs.ecs.insert(map);
+
+    let (player_x, player_y) = rooms[0].centre();
 
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
@@ -61,7 +65,7 @@ fn main() {
 
     gs.ecs
         .create_entity()
-        .with(Position { x: 40, y: 25 })
+        .with(Position { x: player_x, y: player_y })
         .with(Renderable {
             glyph: rltk::to_cp437('@'),
             fg: RGB::named(rltk::YELLOW),
