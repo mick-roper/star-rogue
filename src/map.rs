@@ -60,7 +60,7 @@ pub fn draw_map(map: &[TileType], ctx: &mut Rltk) {
     let mut x = 0;
 
     let floor_colour = RGB::from_f32(0.5, 0.5, 0.5);
-    let wall_colour = RGB::from_f32(0.5, 0.5, 0.5);
+    let wall_colour = RGB::from_f32(0.0, 1.0, 0.0);
     let black = RGB::from_f32(0., 0., 0.);
     let dot = rltk::to_cp437('.');
     let hash = rltk::to_cp437('#');
