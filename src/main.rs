@@ -13,6 +13,9 @@ pub use map::*;
 mod player;
 pub use player::*;
 
+mod visibility_system;
+pub use visibility_system::VisibilitySystem;
+
 pub struct State {
     ecs: World
 }
@@ -39,7 +42,9 @@ impl GameState for State {
 
 impl State {
     fn run_systems(&mut self) {
-        // run systems in here
+        let mut vis = VisibilitySystem{};
+        vis.run_now(&self.ecs);
+        self.ecs.maintain();
     }
 }
 
@@ -61,6 +66,7 @@ fn main() {
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
+    gs.ecs.register::<Viewshed>();
 
     gs.ecs
         .create_entity()
@@ -71,6 +77,7 @@ fn main() {
             bg: RGB::named(rltk::BLACK),
         })
         .with(Player{})
+        .with(Viewshed{ visible_tiles: Vec::new(), range: 8 })
         .build();
 
     rltk::main_loop(context, gs);
