@@ -4,6 +4,9 @@ use specs::prelude::*;
 mod components;
 pub use components::*;
 
+mod shapes;
+pub use shapes::*;
+
 mod map;
 pub use map::*;
 
@@ -50,7 +53,7 @@ fn main() {
         ecs: World::new()
     };
 
-    gs.ecs.insert(new_map());
+    gs.ecs.insert(new_map_with_rooms());
 
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
