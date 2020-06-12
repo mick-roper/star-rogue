@@ -1,18 +1,19 @@
-use rltk::{Rltk, RandomNumberGenerator, BaseMap, Algorithm2D, Point, RGB, Console};
-use super::{Rect, World, Viewshed, Player};
+use rltk::{RandomNumberGenerator, BaseMap, Algorithm2D, Point};
+use super::{Rect};
 use std::cmp::{max, min};
-use specs::join;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
     Wall, Floor
 }
 
+#[derive(Default)]
 pub struct Map {
     pub tiles: Vec<TileType>,
     pub rooms: Vec<Rect>,
     pub width: i32,
-    pub height: i32
+    pub height: i32,
+    pub revealed_tiles: Vec<bool>
 }
 
 impl Map {
@@ -63,11 +64,13 @@ impl BaseMap for Map {
 }
 
 pub fn new_map(width: i32, height: i32) -> Map {
+    let dimensions = (width * height) as usize;
     let mut map = Map {
-        tiles: vec![TileType::Wall; 80*50],
+        tiles: vec![TileType::Wall; dimensions],
         rooms: Vec::new(),
         width: width,
-        height: height
+        height: height,
+        revealed_tiles: vec![false; dimensions],
     };
 
     const MAX_ROOMS: i32 = 30;
