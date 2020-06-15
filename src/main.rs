@@ -1,4 +1,4 @@
-use rltk::{Rltk, GameState, Console, RGB, Point};
+use rltk::{Rltk, GameState, Console, RGB};
 use specs::prelude::*;
 
 mod components;
@@ -28,7 +28,6 @@ impl GameState for State {
 
         self.run_systems();
 
-        let map = self.ecs.fetch::<Map>();
         draw_map(&self.ecs, ctx);
 
         let positions = self.ecs.read_storage::<Position>();
