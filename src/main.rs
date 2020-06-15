@@ -60,8 +60,6 @@ fn main() {
     let map = new_map(80, 50);
     let (player_x, player_y) = map.rooms[0].centre();
 
-    gs.ecs.insert(map);
-
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
@@ -78,6 +76,21 @@ fn main() {
         .with(Player{})
         .with(Viewshed{ visible_tiles: Vec::new(), range: 8, dirty: true })
         .build();
+
+    for room in map.rooms.iter().skip(1) {
+        let (x, y) = room.centre();
+        gs.ecs.create_entity()
+            .with(Position{ x, y })
+            .with(Renderable { 
+                glyph: rltk::to_cp437('g'), 
+                fg: RGB::named(rltk::RED),
+                bg: RGB::named(rltk::BLACK)
+            })
+            .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
+            .build();
+    }
+
+    gs.ecs.insert(map);
 
     rltk::main_loop(context, gs);
 }
