@@ -81,12 +81,21 @@ fn main() {
         .with(Viewshed{ visible_tiles: Vec::new(), range: 8, dirty: true })
         .build();
 
+    let mut rng = rltk::RandomNumberGenerator::new();
+
     for room in map.rooms.iter().skip(1) {
         let (x, y) = room.centre();
+        let glyph: u8;
+        let roll = rng.roll_dice(1, 2);
+        match roll {
+            1 => { glyph = rltk::to_cp437('g') },
+            _ => { glyph = rltk::to_cp437('o') }
+        }
+
         gs.ecs.create_entity()
             .with(Position{ x, y })
             .with(Renderable { 
-                glyph: rltk::to_cp437('g'), 
+                glyph, 
                 fg: RGB::named(rltk::RED),
                 bg: RGB::named(rltk::BLACK)
             })
