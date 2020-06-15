@@ -1,4 +1,4 @@
-use rltk::{RGB};
+use rltk::{RGB, Point};
 use specs::prelude::*;
 
 mod components;
@@ -77,6 +77,7 @@ fn main() {
             .build();
     }
 
+    gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(map);
 
     rltk::main_loop(context, gs);
