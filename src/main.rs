@@ -1,4 +1,4 @@
-use rltk::{Rltk, GameState, Console, RGB};
+use rltk::{RGB};
 use specs::prelude::*;
 
 mod components;
@@ -6,6 +6,9 @@ pub use components::*;
 
 mod shapes;
 pub use shapes::*;
+
+mod state;
+pub use state::*;
 
 mod map;
 pub use map::*;
@@ -19,45 +22,6 @@ pub use visibility_system::VisibilitySystem;
 mod monster_ai_system;
 pub use monster_ai_system::MonsterAI;
 
-pub struct State {
-    ecs: World
-}
-
-impl GameState for State {
-    fn tick(&mut self, ctx: &mut Rltk) {
-        ctx.cls();
-
-        player_input(self, ctx);
-
-        self.run_systems();
-
-        draw_map(&self.ecs, ctx);
-
-        let map = self.ecs.fetch::<Map>();
-        let positions = self.ecs.read_storage::<Position>();
-        let renderables = self.ecs.read_storage::<Renderable>();
-
-        for (pos, render) in (&positions, &renderables).join() {
-            let idx = map.xy_idx(pos.x, pos.y);
-            if map.visible_tiles[idx] {
-                ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph);
-            }
-        }
-    }
-}
-
-impl State {
-    fn run_systems(&mut self) {
-        let mut vis = VisibilitySystem{};
-        vis.run_now(&self.ecs);
-
-        let mut mob = MonsterAI{};
-        mob.run_now(&self.ecs);
-
-        self.ecs.maintain();
-    }
-}
-
 fn main() {
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50()
@@ -65,7 +29,8 @@ fn main() {
         .build();
     
     let mut gs = State {
-        ecs: World::new()
+        ecs: World::new(),
+        runstate: RunState::Running
     };
 
     let map = new_map(80, 50);
