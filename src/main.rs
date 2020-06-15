@@ -82,28 +82,35 @@ fn main() {
     rltk::main_loop(context, gs);
 }
 
+const FLOOR_COLOUR: RGB = RGB{b: 127.5, g: 127.5, r: 0.0};
+const WALL_COLOUR: RGB = RGB{b: 0.0, g: 255.0, r: 0.0};
+const BLACK: RGB = RGB{b: 0.0, g: 0.0, r: 0.0};
+
 fn draw_map(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
 
     let mut y = 0;
     let mut x = 0;
 
-    let floor_colour = RGB::from_f32(0.5, 0.5, 0.5);
-    let wall_colour = RGB::from_f32(0.0, 1.0, 0.0);
-    let black = RGB::from_f32(0., 0., 0.);
-    let dot = rltk::to_cp437('.');
-    let hash = rltk::to_cp437('#');
-
     for (idx, tile) in map.tiles.iter().enumerate() {
         if map.revealed_tiles[idx] {
+            let glyph;
+            let mut fg;
+
             match tile {
                 TileType::Floor => {
-                    ctx.set(x, y, floor_colour, black, dot);
+                    glyph = rltk::to_cp437('.');
+                    fg = FLOOR_COLOUR
                 },
                 TileType::Wall => {
-                    ctx.set(x, y, wall_colour, black, hash);
+                    glyph = rltk::to_cp437('#');
+                    fg = WALL_COLOUR
                 }
             }
+
+            if !map.visible_tiles[idx] { fg = fg.to_greyscale() }
+
+            ctx.set(x, y, fg, BLACK, glyph);
         }
 
         x += 1;

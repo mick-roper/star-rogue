@@ -13,7 +13,8 @@ pub struct Map {
     pub rooms: Vec<Rect>,
     pub width: i32,
     pub height: i32,
-    pub revealed_tiles: Vec<bool>
+    pub revealed_tiles: Vec<bool>,
+    pub visible_tiles: Vec<bool>
 }
 
 impl Map {
@@ -71,6 +72,7 @@ pub fn new_map(width: i32, height: i32) -> Map {
         width: width,
         height: height,
         revealed_tiles: vec![false; dimensions],
+        visible_tiles: vec![false; dimensions]
     };
 
     const MAX_ROOMS: i32 = 30;
