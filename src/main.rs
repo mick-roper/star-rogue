@@ -10,8 +10,12 @@ use systems::*;
 mod player;
 use player::{Player, player_input};
 
+mod map;
+use map::*;
+
 pub struct State {
-    ecs: World
+    ecs: World,
+    map: Map,
 }
 
 impl State {
@@ -26,9 +30,25 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
+        // get input
         player_input(self, ctx);
+
+        // update items
         self.run_systems();
 
+        // draw map
+        let (width, height) = self.map.get_size();
+        for x in 0..width {
+            for y in 0..height {
+                if self.map.get_tile(x, y) == Tile::Wall {
+                    ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), rltk::to_cp437('#'))
+                } else {
+                    ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), rltk::to_cp437('.'))
+                }
+            }
+        }
+
+        // draw objects
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
 
@@ -43,7 +63,8 @@ fn main() {
     let context = RltkBuilder::simple80x50().with_title("Star Rogue").build();
 
     let mut gs = State {
-        ecs: World::new()
+        ecs: World::new(),
+        map: Map::new(80, 50),
     };
 
     configure_state(&mut gs);
