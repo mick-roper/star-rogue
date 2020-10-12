@@ -5,12 +5,27 @@ use std::cmp::{min, max};
 mod components;
 use components::*;
 
+mod systems;
+use systems::*;
+
 struct State {
     ecs: World
 }
 
+impl State {
+    fn run_systems(&mut self) {
+        let mut lw = LeftWalker{};
+        lw.run_now(&self.ecs);
+        self.ecs.maintain();
+    }
+}
+
 impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
+        ctx.cls();
+
+        self.run_systems();
+
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
 
@@ -37,6 +52,7 @@ fn configure_state(gamestate: &mut State) {
     // register components
     gamestate.ecs.register::<Position>();
     gamestate.ecs.register::<Renderable>();
+    gamestate.ecs.register::<LeftMover>();
 
     // create the player
     gamestate.ecs.create_entity()
@@ -60,6 +76,7 @@ fn configure_state(gamestate: &mut State) {
                 foreground: RGB::named(rltk::RED),
                 background: RGB::named(rltk::BLACK),
             })
+            .with(LeftMover {})
             .build();
     }
 }
