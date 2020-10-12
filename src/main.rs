@@ -36,17 +36,7 @@ impl GameState for State {
         // update items
         self.run_systems();
 
-        // draw map
-        let (width, height) = self.map.get_size();
-        for x in 0..width {
-            for y in 0..height {
-                if self.map.get_tile(x, y) == Tile::Wall {
-                    ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), rltk::to_cp437('#'))
-                } else {
-                    ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), rltk::to_cp437('.'))
-                }
-            }
-        }
+        draw_map(&self.map, ctx);
 
         // draw objects
         let positions = self.ecs.read_storage::<Position>();
@@ -104,5 +94,24 @@ fn configure_state(gamestate: &mut State) {
             })
             .with(LeftMover {})
             .build();
+    }
+}
+
+fn draw_map(map: &Map, ctx: &mut Rltk) {
+    let (width, height) = map.get_size();
+
+    let wall: u8 = rltk::to_cp437('#');
+    let path: u8 = rltk::to_cp437('.');
+
+    for x in 0..width {
+        for y in 0..height {
+            let tile = map.get_tile(x, y);
+            let glyph = match tile {
+                Tile::Floor => { path },
+                Tile::Wall => { wall },
+            };
+
+            ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), glyph);
+        }
     }
 }
