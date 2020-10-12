@@ -1,6 +1,5 @@
-use rltk::{Console, GameState, Rltk, RGB, VirtualKeyCode};
+use rltk::{Console, GameState, Rltk, RGB};
 use specs::prelude::*;
-use std::cmp::{min, max};
 
 mod components;
 use components::*;
@@ -8,7 +7,10 @@ use components::*;
 mod systems;
 use systems::*;
 
-struct State {
+mod player;
+use player::{Player, player_input};
+
+pub struct State {
     ecs: World
 }
 
@@ -24,6 +26,7 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
+        player_input(self, ctx);
         self.run_systems();
 
         let positions = self.ecs.read_storage::<Position>();
@@ -53,6 +56,7 @@ fn configure_state(gamestate: &mut State) {
     gamestate.ecs.register::<Position>();
     gamestate.ecs.register::<Renderable>();
     gamestate.ecs.register::<LeftMover>();
+    gamestate.ecs.register::<Player>();
 
     // create the player
     gamestate.ecs.create_entity()
@@ -62,6 +66,7 @@ fn configure_state(gamestate: &mut State) {
             foreground: RGB::named(rltk::YELLOW),
             background: RGB::named(rltk::BLACK),
         })
+        .with(Player{})
         .build();
 
     // create some other entities
