@@ -79,22 +79,6 @@ fn configure_state(gamestate: &mut State) {
         })
         .with(Player{})
         .build();
-
-    // create some other entities
-    for i in 1..10 {
-        gamestate.ecs.create_entity()
-            .with(Position{
-                x: i*7,
-                y: 20,
-            })
-            .with(Renderable{
-                glyph: rltk::to_cp437('☺'),
-                foreground: RGB::named(rltk::RED),
-                background: RGB::named(rltk::BLACK),
-            })
-            .with(LeftMover {})
-            .build();
-    }
 }
 
 fn draw_map(map: &Map, ctx: &mut Rltk) {
