@@ -1,4 +1,4 @@
-use rltk::{RandomNumberGenerator, Algorithm2D, BaseMap};
+use rltk::{RandomNumberGenerator, Algorithm2D, BaseMap, Point};
 use std::cmp::{min, max};
 use super::{Rect};
 
@@ -104,5 +104,17 @@ impl Map {
 
     fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y * self.width + x) as usize
+    }
+}
+
+impl Algorithm2D for Map {
+    fn dimensions(&self) -> Point {
+        Point::new(self.width, self.height)
+    }
+}
+
+impl BaseMap for Map {
+    fn is_opaque(&self, idx: usize) -> bool {
+        self.tiles[idx as usize] == TileType::Wall
     }
 }
