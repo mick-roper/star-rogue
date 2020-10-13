@@ -7,11 +7,13 @@ pub enum TileType {
     Wall, Floor
 }
 
+#[derive(Default)]
 pub struct Map {
     pub width: i32,
     pub height: i32,
     tiles: Vec<TileType>,
     rooms: Vec<Rect>,
+    revealed_tiles: Vec<bool>,
 }
 
 impl Map {
@@ -25,6 +27,7 @@ impl Map {
             height,
             tiles: vec![TileType::Wall; (width * height) as usize],
             rooms: Vec::new(),
+            revealed_tiles: vec![false; (width * height) as usize]
         };
 
         const MAX_ROOMS: i32 = 30;
@@ -65,6 +68,15 @@ impl Map {
         }
 
         map
+    }
+
+    pub fn is_revealed(&self, x: i32, y: i32) -> bool {
+        self.revealed_tiles[self.xy_idx(x, y)]
+    }
+
+    pub fn reveal(&mut self, x: i32, y: i32) {
+        let idx = self.xy_idx(x, y);
+        self.revealed_tiles[idx] = true;
     }
 
     pub fn get_tile(&self, x: i32, y: i32) -> TileType {

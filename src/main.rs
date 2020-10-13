@@ -104,8 +104,7 @@ fn draw_map(ecs: &World, ctx: &mut Rltk) {
     for (player, viewshed) in (&mut players, &mut viewsheds).join() {
         for x in 0..map.width {
             for y in 0..map.height {
-                let pt = Point::new(x, y);
-                if viewshed.visible_tiles.contains(&pt) {
+                if map.is_revealed(x, y) {
                     let tile = map.get_tile(x, y);
                     let glyph = match tile {
                         TileType::Floor => { path },
