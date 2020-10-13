@@ -13,12 +13,18 @@ use rect::*;
 mod map;
 use map::*;
 
+mod visibility_system;
+use visibility_system::*;
+
 pub struct State {
     ecs: World
 }
 
 impl State {
     fn run_systems(&mut self) {
+        let mut vis = VisibilitySystem{};
+        vis.run_now(&self.ecs);
+
         self.ecs.maintain();
     }
 }
