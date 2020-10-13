@@ -42,3 +42,9 @@ impl Map {
 fn xy_idx(width: i32, x: i32, y: i32) -> usize {
     (y * width + x) as usize
 }
+
+fn new_map_rooms_and_corridoors(width:i32, height:i32) -> Vec<Tile> {
+    let mut map = vec![Tile::Wall; (width*height) as usize];
+
+    map
+}
