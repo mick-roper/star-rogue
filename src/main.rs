@@ -1,4 +1,4 @@
-use rltk::{Console, GameState, Rltk, RGB};
+use rltk::{Console, GameState, Rltk, RGB, Point};
 use specs::prelude::*;
 
 mod components;
@@ -39,8 +39,7 @@ impl GameState for State {
         // update items
         self.run_systems();
 
-        let map = self.ecs.fetch::<Map>();
-        draw_map(&map, ctx);
+        draw_map(&self.ecs, ctx);
 
         // draw objects
         let positions = self.ecs.read_storage::<Position>();
@@ -92,19 +91,30 @@ fn build_state() -> State {
     gs
 }
 
-fn draw_map(map: &Map, ctx: &mut Rltk) {
+fn draw_map(ecs: &World, ctx: &mut Rltk) {
+    let mut viewsheds = ecs.write_storage::<ViewShed>();
+    let mut players = ecs.write_storage::<Player>();
+    let map = ecs.fetch::<Map>();
+
     let wall: u8 = rltk::to_cp437('#');
     let path: u8 = rltk::to_cp437('.');
+    let blue = RGB::named(rltk::BLUE);
+    let black = RGB::named(rltk::BLACK);
 
-    for x in 0..map.width {
-        for y in 0..map.height {
-            let tile = map.get_tile(x, y);
-            let glyph = match tile {
-                TileType::Floor => { path },
-                TileType::Wall => { wall },
-            };
-
-            ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), glyph);
+    for (player, viewshed) in (&mut players, &mut viewsheds).join() {
+        for x in 0..map.width {
+            for y in 0..map.height {
+                let pt = Point::new(x, y);
+                if viewshed.visible_tiles.contains(&pt) {
+                    let tile = map.get_tile(x, y);
+                    let glyph = match tile {
+                        TileType::Floor => { path },
+                        TileType::Wall => { wall },
+                    };
+        
+                    ctx.set(x, y, blue, black, glyph);
+                }
+            }
         }
     }
 }
