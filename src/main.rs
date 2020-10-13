@@ -4,9 +4,6 @@ use specs::prelude::*;
 mod components;
 use components::*;
 
-mod systems;
-use systems::*;
-
 mod player;
 use player::{Player, player_input};
 
@@ -22,8 +19,6 @@ pub struct State {
 
 impl State {
     fn run_systems(&mut self) {
-        let mut lw = LeftWalker{};
-        lw.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
