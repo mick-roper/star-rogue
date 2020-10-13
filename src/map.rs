@@ -1,4 +1,4 @@
-use rltk::{RandomNumberGenerator};
+use rltk::{RandomNumberGenerator, Algorithm2D, BaseMap};
 use std::cmp::{min, max};
 use super::{Rect};
 
@@ -71,17 +71,22 @@ impl Map {
         map
     }
 
+    pub fn get_tile(&self, x: i32, y: i32) -> TileType {
+        self.tiles[self.xy_idx(x, y)]
+    }
+
     fn apply_room_to_map(&mut self, room: &Rect) {
         for y in room.y1 +1 ..= room.y2 {
             for x in room.x1 + 1 ..= room.x2 {
-                self.tiles[xy_idx(self.width, x, y)] = TileType::Floor;
+                let idx = self.xy_idx(x, y);
+                self.tiles[idx] = TileType::Floor;
             }
         }
     }
     
     fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
         for x in min(x1, x2) ..= max(x1, x2) {
-            let idx = xy_idx(self.width, x, y);
+            let idx = self.xy_idx(x, y);
             if idx > 0 && idx < (self.width * self.height) as usize {
                 self.tiles[idx] = TileType::Floor;
             }
@@ -90,18 +95,14 @@ impl Map {
     
     fn apply_vertical_tunnel(&mut self, y1: i32, y2: i32, x: i32) {
         for y in min(y1, y2) ..= max(y1, y2) {
-            let idx = xy_idx(self.width, x, y);
+            let idx = self.xy_idx(x, y);
             if idx > 0 && idx < (self.width * self.height) as usize {
              self.tiles[idx] = TileType::Floor;
             }
         }
     }
 
-    pub fn get_tile(&self, x: i32, y: i32) -> TileType {
-        self.tiles[xy_idx(self.width, x, y)]
+    fn xy_idx(&self, x: i32, y: i32) -> usize {
+        (y * self.width + x) as usize
     }
-}
-
-fn xy_idx(width: i32, x: i32, y: i32) -> usize {
-    (y * width + x) as usize
 }
