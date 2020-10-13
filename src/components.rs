@@ -1,4 +1,4 @@
-use rltk::{RGB};
+use rltk::{RGB, Point};
 use specs::prelude::*;
 use specs_derive::Component;
 
@@ -20,3 +20,9 @@ pub struct LeftMover {}
 
 #[derive(Component, Debug)]
 pub struct Player {}
+
+#[derive(Component)]
+pub struct ViewShed {
+    pub visible_tiles : Vec<Point>,
+    pub range: i32,
+}
