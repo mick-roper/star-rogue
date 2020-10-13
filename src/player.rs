@@ -3,8 +3,8 @@ use specs::prelude::*;
 use specs_derive::Component;
 use std::cmp::{min, max};
 
-use super::State;
-use super::components::{Position};
+use super::{State, Map, TileType};
+use super::components::{Position, ViewShed};
 
 #[derive(Component, Debug)]
 pub struct Player {}
@@ -12,10 +12,16 @@ pub struct Player {}
 fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
     let mut players = ecs.write_storage::<Player>();
+    let mut viewsheds = ecs.write_storage::<ViewShed>();
+    let map = ecs.fetch::<Map>();
 
-    for (_player, pos) in  (&mut players, &mut positions).join() {
-        pos.x = min(79, max(0, pos.x + delta_x));
-        pos.y = min(49, max(0, pos.y + delta_y));
+    for (_player, pos, viewshed) in  (&mut players, &mut positions, &mut viewsheds).join() {
+        if map.get_tile(pos.x + delta_x, pos.y + delta_y) != TileType::Wall {
+            pos.x = min(map.width - 1, max(0, pos.x + delta_x));
+            pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+
+            viewshed.dirty = true;
+        }
     }
 }
 

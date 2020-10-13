@@ -25,4 +25,5 @@ pub struct Player {}
 pub struct ViewShed {
     pub visible_tiles : Vec<Point>,
     pub range: i32,
+    pub dirty: bool,
 }

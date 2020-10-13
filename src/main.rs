@@ -85,7 +85,7 @@ fn build_state() -> State {
             background: RGB::named(rltk::BLACK),
         })
         .with(Player{})
-        .with(ViewShed{ visible_tiles: Vec::new(), range: 8 })
+        .with(ViewShed{ visible_tiles: Vec::new(), range: 8, dirty: true })
         .build();
 
     gs
