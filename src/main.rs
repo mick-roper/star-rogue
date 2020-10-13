@@ -10,6 +10,9 @@ use systems::*;
 mod player;
 use player::{Player, player_input};
 
+mod rect;
+use rect::*;
+
 mod map;
 use map::*;
 
