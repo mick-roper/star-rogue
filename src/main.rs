@@ -99,8 +99,8 @@ fn draw_map(map: &Map, ctx: &mut Rltk) {
         for y in 0..height {
             let tile = map.get_tile(x, y);
             let glyph = match tile {
-                Tile::Floor => { path },
-                Tile::Wall => { wall },
+                TileType::Floor => { path },
+                TileType::Wall => { wall },
             };
 
             ctx.set(x, y, RGB::named(rltk::BLUE), RGB::named(rltk::BLACK), glyph);

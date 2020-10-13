@@ -3,14 +3,14 @@ use std::cmp::{min, max};
 use super::{Rect};
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum Tile {
+pub enum TileType {
     Wall, Floor
 }
 
 pub struct Map {
     width: i32,
     height: i32,
-    tiles: Vec<Tile>,
+    tiles: Vec<TileType>,
     rooms: Vec<Rect>,
 }
 
@@ -27,7 +27,7 @@ impl Map {
         let mut map = Map {
             width,
             height,
-            tiles: vec![Tile::Wall; (width * height) as usize],
+            tiles: vec![TileType::Wall; (width * height) as usize],
             rooms: Vec::new(),
         };
 
@@ -71,7 +71,7 @@ impl Map {
         map
     }
 
-    pub fn get_tile(&self, x: i32, y: i32) -> Tile {
+    pub fn get_tile(&self, x: i32, y: i32) -> TileType {
         self.tiles[xy_idx(self.width, x, y)]
     }
 }
@@ -83,7 +83,7 @@ fn xy_idx(width: i32, x: i32, y: i32) -> usize {
 fn apply_room_to_map(room: &Rect, map: &mut Map) {
     for y in room.y1 +1 ..= room.y2 {
         for x in room.x1 + 1 ..= room.x2 {
-            map.tiles[xy_idx(map.width, x, y)] = Tile::Floor;
+            map.tiles[xy_idx(map.width, x, y)] = TileType::Floor;
         }
     }
 }
@@ -92,7 +92,7 @@ fn apply_horizontal_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32) {
     for x in min(x1, x2) ..= max(x1, x2) {
         let idx = xy_idx(map.width, x, y);
         if idx > 0 && idx < (map.width * map.height) as usize {
-            map.tiles[idx] = Tile::Floor;
+            map.tiles[idx] = TileType::Floor;
         }
     }
 }
@@ -101,7 +101,7 @@ fn apply_vertical_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32) {
     for y in min(y1, y2) ..= max(y1, y2) {
         let idx = xy_idx(map.width, x, y);
         if idx > 0 && idx < (map.width * map.height) as usize {
-            map.tiles[idx] = Tile::Floor;
+            map.tiles[idx] = TileType::Floor;
         }
     }
 }
