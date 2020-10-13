@@ -11,6 +11,7 @@ pub struct Map {
     width: i32,
     height: i32,
     tiles: Vec<Tile>,
+    rooms: Vec<Rect>,
 }
 
 impl Map {
@@ -18,14 +19,18 @@ impl Map {
         (self.width, self.height)
     }
 
+    pub fn get_room(&self, index: i32) -> Rect {
+        self.rooms[index as usize]
+    }
+
     pub fn new(width: i32, height: i32) -> Map {
         let mut map = Map {
             width,
             height,
-            tiles: vec![Tile::Wall; (width * height) as usize]
+            tiles: vec![Tile::Wall; (width * height) as usize],
+            rooms: Vec::new(),
         };
 
-        let mut rooms: Vec<Rect> = Vec::new();
         const MAX_ROOMS: i32 = 30;
         const MIN_SIZE: i32 = 4;
         const MAX_SIZE: i32 = 10;
@@ -40,16 +45,16 @@ impl Map {
             let new_room = Rect::new(x, y, w, h);
             let mut ok = true;
             
-            for other_room in rooms.iter() {
+            for other_room in map.rooms.iter() {
                 if new_room.intersect(other_room) { ok = false }
             }
 
             if ok {
                 apply_room_to_map(&new_room, &mut map);
 
-                if !rooms.is_empty() {
+                if !map.rooms.is_empty() {
                     let (new_x, new_y) = new_room.centre();
-                    let (prev_x, prev_y) = rooms[rooms.len() - 1].centre();
+                    let (prev_x, prev_y) = map.rooms[map.rooms.len() - 1].centre();
                     if rng.range(0, 2) == 1 {
                         apply_horizontal_tunnel(&mut map, prev_x, new_x, prev_y);
                         apply_vertical_tunnel(&mut map, prev_y, new_y, new_x);
@@ -59,7 +64,7 @@ impl Map {
                     }
                 }
 
-                rooms.push(new_room);
+                map.rooms.push(new_room);
             }
         }
 

@@ -55,28 +55,29 @@ fn main() {
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50().with_title("Star Rogue").build();
 
+    let state = build_state();
+
+    rltk::main_loop(context,state);
+}
+
+fn build_state() -> State {
     let map = Map::new(80, 50);
     let mut gs = State {
         ecs: World::new()
     };
 
+    let (player_x, player_y) = map.get_room(0).centre();
+
     gs.ecs.insert(map);
-
-    configure_state(&mut gs);
-
-    rltk::main_loop(context, gs);
-}
-
-fn configure_state(gamestate: &mut State) {
     // register components
-    gamestate.ecs.register::<Position>();
-    gamestate.ecs.register::<Renderable>();
-    gamestate.ecs.register::<LeftMover>();
-    gamestate.ecs.register::<Player>();
-    
+    gs.ecs.register::<Position>();
+    gs.ecs.register::<Renderable>();
+    gs.ecs.register::<LeftMover>();
+    gs.ecs.register::<Player>();
+
     // create the player
-    gamestate.ecs.create_entity()
-        .with(Position { x: 40, y: 25 })
+    gs.ecs.create_entity()
+        .with(Position { x: player_x, y: player_y })
         .with(Renderable {
             glyph: rltk::to_cp437('@'),
             foreground: RGB::named(rltk::YELLOW),
@@ -84,6 +85,8 @@ fn configure_state(gamestate: &mut State) {
         })
         .with(Player{})
         .build();
+
+    gs
 }
 
 fn draw_map(map: &Map, ctx: &mut Rltk) {
