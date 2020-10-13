@@ -14,6 +14,7 @@ pub struct Map {
     tiles: Vec<TileType>,
     rooms: Vec<Rect>,
     revealed_tiles: Vec<bool>,
+    pub visible_tiles: Vec<bool>,
 }
 
 impl Map {
@@ -27,7 +28,8 @@ impl Map {
             height,
             tiles: vec![TileType::Wall; (width * height) as usize],
             rooms: Vec::new(),
-            revealed_tiles: vec![false; (width * height) as usize]
+            revealed_tiles: vec![false; (width * height) as usize],
+            visible_tiles: vec![false; (width * height) as usize],
         };
 
         const MAX_ROOMS: i32 = 30;
@@ -77,6 +79,15 @@ impl Map {
     pub fn reveal(&mut self, x: i32, y: i32) {
         let idx = self.xy_idx(x, y);
         self.revealed_tiles[idx] = true;
+    }
+
+    pub fn clear_visible_tiles(&mut self) {
+        for t in self.visible_tiles.iter_mut() { *t = false }
+    }
+
+    pub fn mark_as_visible(&mut self, x: i32, y: i32) {
+        let idx = self.xy_idx(x, y);
+        self.visible_tiles[idx] = true;
     }
 
     pub fn get_tile(&self, x: i32, y: i32) -> TileType {

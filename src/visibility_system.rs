@@ -21,9 +21,11 @@ impl<'a> System<'a> for VisibilitySystem {
 
             // if this is the player, reveal what they can see
             let p: Option<&Player> = player.get(ent);
-            if let Some(p) = p {
+            if let Some(_p) = p {
+                map.clear_visible_tiles();
                 for vis in viewshed.visible_tiles.iter() {
                     map.reveal(vis.x, vis.y);
+                    map.mark_as_visible(vis.x, vis.y);
                 }
             }
         }
