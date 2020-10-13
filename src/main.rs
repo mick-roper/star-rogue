@@ -74,6 +74,7 @@ fn build_state() -> State {
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<LeftMover>();
     gs.ecs.register::<Player>();
+    gs.ecs.register::<ViewShed>();
 
     // create the player
     gs.ecs.create_entity()
@@ -84,6 +85,7 @@ fn build_state() -> State {
             background: RGB::named(rltk::BLACK),
         })
         .with(Player{})
+        .with(ViewShed{ visible_tiles: Vec::new(), range: 8 })
         .build();
 
     gs
