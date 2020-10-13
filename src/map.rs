@@ -8,17 +8,13 @@ pub enum TileType {
 }
 
 pub struct Map {
-    width: i32,
-    height: i32,
+    pub width: i32,
+    pub height: i32,
     tiles: Vec<TileType>,
     rooms: Vec<Rect>,
 }
 
 impl Map {
-    pub fn get_size(&self) -> (i32, i32) {
-        (self.width, self.height)
-    }
-
     pub fn get_room(&self, index: i32) -> Rect {
         self.rooms[index as usize]
     }

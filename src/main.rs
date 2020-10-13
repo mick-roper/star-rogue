@@ -93,13 +93,11 @@ fn build_state() -> State {
 }
 
 fn draw_map(map: &Map, ctx: &mut Rltk) {
-    let (width, height) = map.get_size();
-
     let wall: u8 = rltk::to_cp437('#');
     let path: u8 = rltk::to_cp437('.');
 
-    for x in 0..width {
-        for y in 0..height {
+    for x in 0..map.width {
+        for y in 0..map.height {
             let tile = map.get_tile(x, y);
             let glyph = match tile {
                 TileType::Floor => { path },
