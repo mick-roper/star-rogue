@@ -17,8 +17,7 @@ mod map;
 use map::*;
 
 pub struct State {
-    ecs: World,
-    map: Map,
+    ecs: World
 }
 
 impl State {
@@ -39,7 +38,8 @@ impl GameState for State {
         // update items
         self.run_systems();
 
-        draw_map(&self.map, ctx);
+        let map = self.ecs.fetch::<Map>();
+        draw_map(&map, ctx);
 
         // draw objects
         let positions = self.ecs.read_storage::<Position>();
@@ -55,10 +55,12 @@ fn main() {
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50().with_title("Star Rogue").build();
 
+    let map = Map::new(80, 50);
     let mut gs = State {
-        ecs: World::new(),
-        map: Map::new(80, 50),
+        ecs: World::new()
     };
+
+    gs.ecs.insert(map);
 
     configure_state(&mut gs);
 
@@ -71,7 +73,7 @@ fn configure_state(gamestate: &mut State) {
     gamestate.ecs.register::<Renderable>();
     gamestate.ecs.register::<LeftMover>();
     gamestate.ecs.register::<Player>();
-
+    
     // create the player
     gamestate.ecs.create_entity()
         .with(Position { x: 40, y: 25 })
