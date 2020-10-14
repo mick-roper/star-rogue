@@ -16,6 +16,9 @@ use map::*;
 mod visibility_system;
 use visibility_system::*;
 
+mod monster_ai_system;
+use monster_ai_system::*;
+
 pub struct State {
     ecs: World,
 }
@@ -25,6 +28,9 @@ impl State {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
 
+        let mut mob = MonsterAI{};
+        mob.run_now(&self.ecs);
+        
         self.ecs.maintain();
     }
 }
