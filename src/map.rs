@@ -9,12 +9,12 @@ pub enum TileType {
 
 #[derive(Default)]
 pub struct Map {
-    pub width: i32,
-    pub height: i32,
+    width: i32,
+    height: i32,
     tiles: Vec<TileType>,
     rooms: Vec<Rect>,
     revealed_tiles: Vec<bool>,
-    pub visible_tiles: Vec<bool>,
+    visible_tiles: Vec<bool>,
 }
 
 impl Map {
@@ -72,11 +72,19 @@ impl Map {
         map
     }
 
-    pub fn is_revealed(&self, x: i32, y: i32) -> bool {
+    pub fn get_dimensions(&self) -> (i32, i32) {
+        (self.width, self.height)
+    }
+
+    pub fn tile_is_revealed(&self, x: i32, y: i32) -> bool {
         self.revealed_tiles[self.xy_idx(x, y)]
     }
 
-    pub fn reveal(&mut self, x: i32, y: i32) {
+    pub fn tile_is_visible(&self, x: i32, y: i32) -> bool {
+        self.visible_tiles[self.xy_idx(x, y)]
+    }
+
+    pub fn reveal_tile(&mut self, x: i32, y: i32) {
         let idx = self.xy_idx(x, y);
         self.revealed_tiles[idx] = true;
     }
@@ -85,7 +93,7 @@ impl Map {
         for t in self.visible_tiles.iter_mut() { *t = false }
     }
 
-    pub fn mark_as_visible(&mut self, x: i32, y: i32) {
+    pub fn mark_tile_as_visible(&mut self, x: i32, y: i32) {
         let idx = self.xy_idx(x, y);
         self.visible_tiles[idx] = true;
     }

@@ -92,28 +92,32 @@ fn build_state() -> State {
 }
 
 fn draw_map(ecs: &World, ctx: &mut Rltk) {
-    let mut viewsheds = ecs.write_storage::<ViewShed>();
-    let mut players = ecs.write_storage::<Player>();
     let map = ecs.fetch::<Map>();
 
     let wall: u8 = rltk::to_cp437('#');
     let path: u8 = rltk::to_cp437('.');
-    let blue = RGB::named(rltk::BLUE);
     let black = RGB::named(rltk::BLACK);
 
-    for (player, viewshed) in (&mut players, &mut viewsheds).join() {
-        for x in 0..map.width {
-            for y in 0..map.height {
-                if map.is_revealed(x, y) {
-                    let tile = map.get_tile(x, y);
-                    let glyph = match tile {
-                        TileType::Floor => { path },
-                        TileType::Wall => { wall },
-                    };
-        
-                    ctx.set(x, y, blue, black, glyph);
+    let (width, height) = map.get_dimensions();
+
+    for x in 0..width {
+        for y in 0..height {
+            let tile = map.get_tile(x, y);
+            let glyph;
+            let mut fg;
+            match tile {
+                TileType::Floor => {
+                    glyph = path;
+                    fg = RGB::from_f32(0.0, 0.5, 0.5);
                 }
-            }
+                TileType::Wall => {
+                    glyph = wall;
+                    fg = RGB::from_f32(0., 1.0, 0.);
+                }
+            };
+
+            if !map.tile_is_visible(x, y) { fg = fg.to_greyscale() }
+            ctx.set(x, y, fg, black, glyph);
         }
     }
 }
