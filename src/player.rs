@@ -3,7 +3,7 @@ use specs::prelude::*;
 use specs_derive::Component;
 use std::cmp::{min, max};
 
-use super::{State, Map, TileType};
+use super::{State, Map, TileType, RunState};
 use super::components::{Position, ViewShed};
 
 #[derive(Component, Debug)]
@@ -26,15 +26,17 @@ fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     }
 }
 
-pub fn player_input(gs: &mut State, ctx: &mut Rltk) {
+pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     match ctx.key {
-        None => {}
+        None => { return RunState::Paused }
         Some(key) => match key {
             VirtualKeyCode::Left => try_move_player(-1, 0, &mut gs.ecs),
             VirtualKeyCode::Right => try_move_player(1, 0, &mut gs.ecs),
             VirtualKeyCode::Up => try_move_player(0, -1, &mut gs.ecs),
             VirtualKeyCode::Down => try_move_player(0, 1, &mut gs.ecs),
-            _ => {}
+            _ => { return RunState::Paused }
         }
     }
+
+    RunState::Running
 }

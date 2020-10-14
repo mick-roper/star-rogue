@@ -19,8 +19,12 @@ use visibility_system::*;
 mod monster_ai_system;
 use monster_ai_system::*;
 
+#[derive(PartialEq, Copy, Clone)]
+pub enum RunState { Paused, Running }
+
 pub struct State {
     ecs: World,
+    runstate: RunState,
 }
 
 impl State {
@@ -39,11 +43,15 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
-        // get input
-        player_input(self, ctx);
-
-        // update items
-        self.run_systems();
+        match self.runstate {
+            RunState::Running => { // update entities
+                self.run_systems();
+                self.runstate = RunState::Paused;
+            }
+            _ => { // get input
+                self.runstate = player_input(self, ctx);
+            }
+        }
 
         draw_map(&self.ecs, ctx);
 
@@ -77,7 +85,7 @@ fn main() {
 
 fn build_state() -> State {
     let map = Map::new(80, 50);
-    let mut gs = State { ecs: World::new() };
+    let mut gs = State { ecs: World::new(), runstate: RunState::Running };
     let mut rng = rltk::RandomNumberGenerator::new();
     // register components
     gs.ecs.register::<Position>();
