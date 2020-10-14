@@ -18,10 +18,6 @@ pub struct Map {
 }
 
 impl Map {
-    pub fn get_room(&self, index: i32) -> Rect {
-        self.rooms[index as usize]
-    }
-
     pub fn new(width: i32, height: i32) -> Map {
         let mut map = Map {
             width,
@@ -70,6 +66,14 @@ impl Map {
         }
 
         map
+    }
+
+    pub fn get_room(&self, index: i32) -> Rect {
+        self.rooms[index as usize]
+    }
+
+    pub fn get_room_count(&self) -> i32 {
+        self.rooms.len() as i32
     }
 
     pub fn get_dimensions(&self) -> (i32, i32) {
