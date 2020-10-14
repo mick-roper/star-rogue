@@ -69,10 +69,7 @@ fn main() {
 fn build_state() -> State {
     let map = Map::new(80, 50);
     let mut gs = State { ecs: World::new() };
-
-    let (player_x, player_y) = map.get_room(0).centre();
-
-    gs.ecs.insert(map);
+    
     // register components
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
@@ -81,6 +78,7 @@ fn build_state() -> State {
     gs.ecs.register::<ViewShed>();
 
     // create the player
+    let (player_x, player_y) = map.get_room(0).centre();
     gs.ecs
         .create_entity()
         .with(Position {
@@ -99,6 +97,27 @@ fn build_state() -> State {
             dirty: true,
         })
         .build();
+
+    // create some enemies 
+    for i in 1..map.get_room_count() {
+        let (x, y) = map.get_room(i).centre();
+        gs.ecs
+            .create_entity()
+            .with(Position { x, y })
+            .with(Renderable {
+                glyph: rltk::to_cp437('g'),
+                foreground: RGB::named(rltk::RED),
+                background: RGB::named(rltk::BLACK),
+            })
+            .with(ViewShed {
+                visible_tiles: Vec::new(),
+                range: 8,
+                dirty: true
+            })
+            .build();
+    }
+
+    gs.ecs.insert(map);
 
     gs
 }
