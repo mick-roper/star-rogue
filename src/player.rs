@@ -17,8 +17,9 @@ fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
     for (_player, pos, viewshed) in  (&mut players, &mut positions, &mut viewsheds).join() {
         if map.get_tile(pos.x + delta_x, pos.y + delta_y) != TileType::Wall {
-            pos.x = min(map.width - 1, max(0, pos.x + delta_x));
-            pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+            let (width, height) = map.get_dimensions();
+            pos.x = min(width - 1, max(0, pos.x + delta_x));
+            pos.y = min(height - 1, max(0, pos.y + delta_y));
 
             viewshed.dirty = true;
         }

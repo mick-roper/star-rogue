@@ -76,10 +76,6 @@ impl Map {
         (self.width, self.height)
     }
 
-    pub fn tile_is_revealed(&self, x: i32, y: i32) -> bool {
-        self.revealed_tiles[self.xy_idx(x, y)]
-    }
-
     pub fn tile_is_visible(&self, x: i32, y: i32) -> bool {
         self.visible_tiles[self.xy_idx(x, y)]
     }
