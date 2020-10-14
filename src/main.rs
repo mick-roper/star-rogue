@@ -44,8 +44,10 @@ impl GameState for State {
         // draw objects
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
+        let map = self.ecs.fetch::<Map>();
 
         for (pos, render) in (&positions, &renderables).join() {
+            if map.tile_is_visible(pos.x, pos.y) {
             ctx.set(
                 pos.x,
                 pos.y,
@@ -53,6 +55,7 @@ impl GameState for State {
                 render.background,
                 render.glyph,
             )
+        }
         }
     }
 }
