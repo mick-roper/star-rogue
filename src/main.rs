@@ -5,7 +5,7 @@ mod components;
 use components::*;
 
 mod player;
-use player::{Player, player_input};
+use player::{player_input, Player};
 
 mod rect;
 use rect::*;
@@ -17,12 +17,12 @@ mod visibility_system;
 use visibility_system::*;
 
 pub struct State {
-    ecs: World
+    ecs: World,
 }
 
 impl State {
     fn run_systems(&mut self) {
-        let mut vis = VisibilitySystem{};
+        let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
 
         self.ecs.maintain();
@@ -46,7 +46,13 @@ impl GameState for State {
         let renderables = self.ecs.read_storage::<Renderable>();
 
         for (pos, render) in (&positions, &renderables).join() {
-            ctx.set(pos.x, pos.y, render.foreground, render.background, render.glyph)
+            ctx.set(
+                pos.x,
+                pos.y,
+                render.foreground,
+                render.background,
+                render.glyph,
+            )
         }
     }
 }
@@ -57,14 +63,12 @@ fn main() {
 
     let state = build_state();
 
-    rltk::main_loop(context,state);
+    rltk::main_loop(context, state);
 }
 
 fn build_state() -> State {
     let map = Map::new(80, 50);
-    let mut gs = State {
-        ecs: World::new()
-    };
+    let mut gs = State { ecs: World::new() };
 
     let (player_x, player_y) = map.get_room(0).centre();
 
@@ -77,15 +81,23 @@ fn build_state() -> State {
     gs.ecs.register::<ViewShed>();
 
     // create the player
-    gs.ecs.create_entity()
-        .with(Position { x: player_x, y: player_y })
+    gs.ecs
+        .create_entity()
+        .with(Position {
+            x: player_x,
+            y: player_y,
+        })
         .with(Renderable {
             glyph: rltk::to_cp437('@'),
             foreground: RGB::named(rltk::YELLOW),
             background: RGB::named(rltk::BLACK),
         })
-        .with(Player{})
-        .with(ViewShed{ visible_tiles: Vec::new(), range: 8, dirty: true })
+        .with(Player {})
+        .with(ViewShed {
+            visible_tiles: Vec::new(),
+            range: 8,
+            dirty: true,
+        })
         .build();
 
     gs
@@ -102,22 +114,26 @@ fn draw_map(ecs: &World, ctx: &mut Rltk) {
 
     for x in 0..width {
         for y in 0..height {
-            let tile = map.get_tile(x, y);
-            let glyph;
-            let mut fg;
-            match tile {
-                TileType::Floor => {
-                    glyph = path;
-                    fg = RGB::from_f32(0.0, 0.5, 0.5);
-                }
-                TileType::Wall => {
-                    glyph = wall;
-                    fg = RGB::from_f32(0., 1.0, 0.);
-                }
-            };
+            if map.tile_is_revealed(x, y) {
+                let tile = map.get_tile(x, y);
+                let glyph;
+                let mut fg;
+                match tile {
+                    TileType::Floor => {
+                        glyph = path;
+                        fg = RGB::from_f32(0.0, 0.5, 0.5);
+                    }
+                    TileType::Wall => {
+                        glyph = wall;
+                        fg = RGB::from_f32(0., 1.0, 0.);
+                    }
+                };
 
-            if !map.tile_is_visible(x, y) { fg = fg.to_greyscale() }
-            ctx.set(x, y, fg, black, glyph);
+                if !map.tile_is_visible(x, y) {
+                    fg = fg.to_greyscale()
+                }
+                ctx.set(x, y, fg, black, glyph);
+            }
         }
     }
 }

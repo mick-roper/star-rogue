@@ -80,6 +80,10 @@ impl Map {
         self.visible_tiles[self.xy_idx(x, y)]
     }
 
+    pub fn tile_is_revealed(&self, x: i32, y: i32) -> bool {
+        self.revealed_tiles[self.xy_idx(x, y)]
+    }
+
     pub fn reveal_tile(&mut self, x: i32, y: i32) {
         let idx = self.xy_idx(x, y);
         self.revealed_tiles[idx] = true;
