@@ -30,3 +30,8 @@ pub struct ViewShed {
 
 #[derive(Component)]
 pub struct Monster {}
+
+#[derive(Component, Debug)]
+pub struct Name {
+    pub name: String
+}

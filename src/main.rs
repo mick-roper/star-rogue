@@ -1,4 +1,4 @@
-use rltk::{Console, GameState, Rltk, RGB};
+use rltk::{Console, GameState, Rltk, RGB, Point};
 use specs::prelude::*;
 
 mod components;
@@ -94,6 +94,7 @@ fn build_state() -> State {
     gs.ecs.register::<Player>();
     gs.ecs.register::<ViewShed>();
     gs.ecs.register::<Monster>();
+    gs.ecs.register::<Name>();
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();
@@ -114,14 +115,17 @@ fn build_state() -> State {
             range: 8,
             dirty: true,
         })
+        .with(Name{ name: "Player".to_string() })
         .build();
 
     // create some enemies
     for i in 1..map.get_room_count() {
         let (x, y) = map.get_room(i).centre();
-        let glyph = match rng.roll_dice(1, 2) {
-            1 => { rltk::to_cp437('g') }
-            _ => { rltk::to_cp437('o') }
+        let glyph: u8;
+        let name: String;
+        match rng.roll_dice(1, 2) {
+            1 => { glyph = rltk::to_cp437('g'); name = "Goblin".to_string(); }
+            _ => { glyph = rltk::to_cp437('o'); name = "Orc".to_string(); }
         };
 
         gs.ecs
@@ -138,10 +142,12 @@ fn build_state() -> State {
                 dirty: true,
             })
             .with(Monster {})
+            .with(Name { name: format!("{} #{}", &name, i) })
             .build();
     }
 
     gs.ecs.insert(map);
+    gs.ecs.insert(Point::new(player_x, player_y));
 
     gs
 }
