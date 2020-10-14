@@ -85,6 +85,7 @@ fn build_state() -> State {
     gs.ecs.register::<LeftMover>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<ViewShed>();
+    gs.ecs.register::<Monster>();
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();

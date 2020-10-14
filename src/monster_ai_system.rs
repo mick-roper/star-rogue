@@ -9,7 +9,7 @@ impl <'a> System<'a> for MonsterAI {
                         ReadStorage<'a, Position>,
                         ReadStorage<'a, Monster>);
     
-    fn run(&mut self, data: Self::System) {
+    fn run(&mut self, data: Self::SystemData) {
         let (viewshed, pos, monster) = data;
 
         for (viewshed, pos, _monster) in (&viewshed, &pos, &monster).join() {
