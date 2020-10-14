@@ -122,6 +122,7 @@ fn build_state() -> State {
                 range: 8,
                 dirty: true,
             })
+            .with(Monster {})
             .build();
     }
 
