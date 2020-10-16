@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{ViewShed, Position, Monster, Name};
+use super::{ViewShed, Monster, Name};
 use rltk::{console, Point};
 
 pub struct MonsterAI {}
