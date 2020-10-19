@@ -200,6 +200,20 @@ impl BaseMap for Map {
             exits.push((_idx + w, 1.0))
         };
 
+        // diagonal directions
+        if self.is_exit_valid(x-1, y-1) {
+            exits.push(((_idx - w) - 1, 1.45));
+        };
+        if self.is_exit_valid(x+1, y-1) {
+            exits.push(((_idx - w) + 1, 1.45));
+        };
+        if self.is_exit_valid(x-1, y+1) {
+            exits.push(((_idx + w) - 1, 1.45));
+        };
+        if self.is_exit_valid(x+1, y+1) {
+            exits.push(((_idx + w) + 1, 1.45));
+        };
+
         exits
     }
 
