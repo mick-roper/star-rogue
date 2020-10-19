@@ -20,4 +20,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         if y < 49 { ctx.print(2, y, s); }
         y += 1;
     }
+
+    // draw mouse cursor
+    let mouse_pos = ctx.mouse_pos();
+    ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::MAGENTA));
 }
