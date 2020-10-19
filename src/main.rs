@@ -52,8 +52,6 @@ impl State {
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
 
-        delete_the_dead(&mut self.ecs);
-
         self.ecs.maintain();
     }
 }
