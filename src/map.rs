@@ -37,6 +37,7 @@ impl Map {
 
         let mut rng = RandomNumberGenerator::new();
 
+        // add rooms
         for _ in 0..MAX_ROOMS {
             let w = rng.range(MIN_SIZE, MAX_SIZE);
             let h = rng.range(MIN_SIZE, MAX_SIZE);
@@ -150,7 +151,7 @@ impl Map {
         if x < 1 || x > self.width - 1 || y < 1 || y > self.height - 1 {
             return false;
         }
-        let idx = self.xy_idx(x,y);
+        let idx = self.xy_idx(x, y);
         !self.blocked_tiles[idx]
     }
 }
