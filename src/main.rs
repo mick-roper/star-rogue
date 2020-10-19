@@ -119,7 +119,7 @@ fn build_state() -> State {
         .build();
 
     // create some enemies
-    for i in 1..map.get_room_count() {
+    for i in 1..map.get_room_count() { // skip the first room
         let (x, y) = map.get_room(i).centre();
         let glyph: u8;
         let name: String;
