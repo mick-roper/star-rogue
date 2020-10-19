@@ -14,6 +14,7 @@ impl<'a> System<'a> for MonsterAI {
         ReadStorage<'a, Monster>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, WantsToMelee>,
+        ReadExpect<'a, RunState>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -25,10 +26,13 @@ impl<'a> System<'a> for MonsterAI {
             mut viewshed,
             monsters,
             mut position,
-            mut wants_to_melee
+            mut wants_to_melee,
+            runstate
         ) = data;
 
-        for (entity, mut viewshed, _monster, mut pos) in (&entities, &mut viewshed, &monsters, &mut position).join() {
+        if *runstate != RunState::MonsterTurn { return; }
+
+        for (entity, mut viewshed, _monster, mut pos) in (&entities, &mut viewshed, &monsters, &mut position).join() {            
             let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
             if distance < 1.5 {
                 wants_to_melee.insert(entity, WantsToMelee { target: *player_entity }).expect("unable to insert an attack");
