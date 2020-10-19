@@ -21,7 +21,19 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         y += 1;
     }
 
-    // draw mouse cursor
+    draw_tooltips(ecs, ctx);
+}
+
+fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
+    let map = ecs.fetch::<Map>();
+    let names = ecs.read_storage::<Name>();
+    let positions = ecs.read_storage::<Position>();
     let mouse_pos = ctx.mouse_pos();
-    ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::MAGENTA));
+    let (map_width, map_height) = map.get_dimensions();
+
+    if mouse_pos.0 >= map_width || mouse_pos.1 >= map_height { return; }
+
+    for (name, position) in (&names, &positions).join() {
+        // todo: complete this
+    }
 }
