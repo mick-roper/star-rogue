@@ -1,6 +1,7 @@
 use super::Rect;
 use rltk::{Algorithm2D, BaseMap, Point, RandomNumberGenerator};
 use std::cmp::{max, min};
+use specs::{Entity};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
@@ -17,6 +18,7 @@ pub struct Map {
     revealed_tiles: Vec<bool>,
     visible_tiles: Vec<bool>,
     blocked_tiles: Vec<bool>,
+    tile_content: Vec<Vec<Entity>>,
 }
 
 impl Map {
@@ -29,6 +31,7 @@ impl Map {
             revealed_tiles: vec![false; (width * height) as usize],
             visible_tiles: vec![false; (width * height) as usize],
             blocked_tiles: vec![false; (width * height) as usize],
+            tile_content: vec![Vec::new(); (width * height) as usize],
         };
 
         const MAX_ROOMS: i32 = 30;
@@ -73,6 +76,22 @@ impl Map {
         map.update_blocked_tiles();
 
         map
+    }
+
+    pub fn add_tile_content(&mut self, x: i32, y: i32, entity: Entity) {
+        let idx = self.xy_idx(x, y);
+        self.tile_content[idx].push(entity);
+    }
+
+    // pub fn get_tile_content(&self, x: i32, y: i32) -> &Vec<Entity> {
+    //     let idx = self.xy_idx(x, y);
+    //     &self.tile_content[idx];
+    // }
+
+    pub fn clear_content_index(&mut self) {
+        for content in self.tile_content.iter_mut() {
+            content.clear();
+        }
     }
 
     pub fn tile_is_blocked(&self, x: i32, y: i32) -> bool {
