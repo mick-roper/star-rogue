@@ -136,6 +136,17 @@ impl Map {
     fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y * self.width + x) as usize
     }
+
+    fn is_exit_valid(&self, x: i32, y: i32) -> bool {
+        if x < 1 || 
+            x > self.width-1 ||
+            y < 1 ||
+            y > self.height-1 {
+                return false;
+            }
+        
+        self.get_tile(x,y) != TileType::Wall
+    }
 }
 
 impl Algorithm2D for Map {
@@ -147,5 +158,20 @@ impl Algorithm2D for Map {
 impl BaseMap for Map {
     fn is_opaque(&self, idx: usize) -> bool {
         self.tiles[idx as usize] == TileType::Wall
+    }
+
+    fn get_available_exits(&self, _idx: usize) -> Vec<(usize, f32)> {
+        let mut exits = Vec::<(usize, f32)>::new();
+        let x = _idx as i32 % self.width;
+        let y = _idx as i32 / self.width;
+        let w = self.width as usize;
+
+        // cardinal directions
+        if self.is_exit_valid(x-1, y) { exits.push((_idx -1, 1.0)) };
+        if self.is_exit_valid(x+1, y) { exits.push((_idx + 1, 1.0)) };
+        if self.is_exit_valid(x+1, y) { exits.push((_idx-w, 1.0)) };
+        if self.is_exit_valid(x+1, y) { exits.push((_idx+w, 1.0)) };
+
+        exits
     }
 }
