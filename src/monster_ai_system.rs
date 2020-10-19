@@ -1,6 +1,5 @@
 use super::*;
-use rltk::{console, Point};
-use specs::prelude::*;
+use rltk::{Point};
 
 pub struct MonsterAI {}
 
