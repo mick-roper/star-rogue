@@ -112,16 +112,19 @@ impl GameState for State {
 }
 
 fn main() {
+    const MAPHEIGHT: i32 = 80;
+    const MAPWIDTH: i32 = 50;
+
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50().with_title("Star Rogue").build();
 
-    let state = build_state();
+    let state = build_state(MAPWIDTH, MAPHEIGHT);
 
     rltk::main_loop(context, state);
 }
 
-fn build_state() -> State {
-    let map = Map::new(80, 50);
+fn build_state(width: i32, height: i32) -> State {
+    let map = Map::new(width, height);
     let mut gs = State { ecs: World::new() };
     let mut rng = rltk::RandomNumberGenerator::new();
     // register components
