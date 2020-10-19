@@ -25,7 +25,7 @@ fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             let target = combat_stats.get(*potential_target);
             match target {
                 None => {}
-                Some(t) => {
+                Some(_t) => {
                     console::log(&format!("From hells heart I stab at thee!"));
                     return;
                 }
