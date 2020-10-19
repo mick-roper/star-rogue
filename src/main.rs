@@ -102,6 +102,7 @@ fn build_state() -> State {
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
+    gs.ecs.register::<CombatStats>();
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();
@@ -123,6 +124,7 @@ fn build_state() -> State {
             dirty: true,
         })
         .with(Name{ name: "Player".to_string() })
+        .with(CombatStats::new(30, 2, 5))
         .build();
 
     // create some enemies
@@ -151,6 +153,7 @@ fn build_state() -> State {
             .with(Monster {})
             .with(Name { name: format!("{} #{}", &name, i) })
             .with(BlocksTile {})
+            .with(CombatStats::new(16, 1, 4))
             .build();
     }
 
