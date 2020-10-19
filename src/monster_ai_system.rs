@@ -32,7 +32,7 @@ impl <'a> System<'a> for MonsterAI {
 
                 if path.success && path.steps.len() > 1 {
                     let (width, _) = map.get_dimensions();
-                    pos.x = path.steps[1] as i32 & width;
+                    pos.x = path.steps[1] as i32 % width;
                     pos.y = path.steps[1] as i32 / width;
                     viewshed.dirty = true;
                 }
