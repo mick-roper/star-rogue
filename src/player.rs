@@ -3,8 +3,7 @@ use specs::prelude::*;
 use specs_derive::Component;
 use std::cmp::{max, min};
 
-use super::components::{Position, ViewShed, CombatStats};
-use super::{Map, RunState, State};
+use super::*;
 
 #[derive(Component, Debug)]
 pub struct Player {}
@@ -17,18 +16,19 @@ fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let map = ecs.fetch::<Map>();
     let combat_stats = ecs.read_storage::<CombatStats>();
 
-    for (_player, pos, viewshed) in (&mut players, &mut positions, &mut viewsheds).join() {
+    let entities = ecs.entities();
+    let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
+
+    for (entity, _player, pos, viewshed) in (&entities, &mut players, &mut positions, &mut viewsheds).join() {
         let (width, height) = map.get_dimensions();
         let x = min(width - 1, max(0, pos.x + delta_x));
         let y = min(height - 1, max(0, pos.y + delta_y));
-        for potential_target in map.get_tile_content(x, y) {
+
+        for potential_target in map.get_tile_content(x, y).iter() {
             let target = combat_stats.get(*potential_target);
-            match target {
-                None => {}
-                Some(_t) => {
-                    console::log(&format!("From hells heart I stab at thee!"));
-                    return;
-                }
+            if let Some(_target) = target {
+                wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("Add target failed");
+                return;
             }
         }
 

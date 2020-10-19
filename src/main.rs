@@ -13,14 +13,8 @@ use rect::*;
 mod map;
 use map::*;
 
-mod visibility_system;
-use visibility_system::*;
-
-mod monster_ai_system;
-use monster_ai_system::*;
-
-mod map_indexing_system;
-use map_indexing_system::*;
+mod systems;
+use systems::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { Paused, Running }
