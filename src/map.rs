@@ -16,6 +16,7 @@ pub struct Map {
     rooms: Vec<Rect>,
     revealed_tiles: Vec<bool>,
     visible_tiles: Vec<bool>,
+    blocked_tiles: Vec<bool>,
 }
 
 impl Map {
@@ -27,6 +28,7 @@ impl Map {
             rooms: Vec::new(),
             revealed_tiles: vec![false; (width * height) as usize],
             visible_tiles: vec![false; (width * height) as usize],
+            blocked_tiles: vec![false; (width * height) as usize],
         };
 
         const MAX_ROOMS: i32 = 30;
@@ -65,6 +67,11 @@ impl Map {
 
                 map.rooms.push(new_room);
             }
+        }
+
+        // set blocked tiles
+        for (i, tile) in map.tiles.iter_mut().enumerate() {
+            map.blocked_tiles[i] = *tile == TileType::Wall;
         }
 
         map
@@ -143,8 +150,8 @@ impl Map {
         if x < 1 || x > self.width - 1 || y < 1 || y > self.height - 1 {
             return false;
         }
-
-        self.get_tile(x, y) != TileType::Wall
+        let idx = self.xy_idx(x,y);
+        !self.blocked_tiles[idx]
     }
 }
 
