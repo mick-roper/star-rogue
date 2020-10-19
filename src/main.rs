@@ -13,6 +13,9 @@ use rect::*;
 mod map;
 use map::*;
 
+mod game_log;
+use game_log::*;
+
 mod damage_system;
 use damage_system::{DamageSystem, delete_the_dead};
 
@@ -202,6 +205,7 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(RunState::PreRun);
+    gs.ecs.insert(GameLog{ entries: vec!["Welcome to Star Rogue!".to_string()] });
 
     gs
 }
