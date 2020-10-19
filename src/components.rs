@@ -50,8 +50,8 @@ pub struct CombatStats {
 impl CombatStats {
     pub fn new(hp: i32, defense: i32, power: i32) -> CombatStats {
         CombatStats {
-            max_hp: max_hp,
-            current_hp: max_hp,
+            max_hp: hp,
+            current_hp: hp,
             defense: defense,
             power: power,
         }
