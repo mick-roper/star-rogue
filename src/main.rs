@@ -103,6 +103,8 @@ fn build_state() -> State {
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<CombatStats>();
+    gs.ecs.register::<WantsToMelee>();
+    gs.ecs.register::<SufferDamage>();
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();
