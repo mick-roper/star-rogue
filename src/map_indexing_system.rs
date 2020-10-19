@@ -6,7 +6,7 @@ pub struct MapIndexingSystem {}
 impl <'a> System<'a> for MapIndexingSystem {
     type SystemData = ( WriteExpect<'a, Map>,
                         ReadStorage<'a, Position>,
-                        ReadStorage<'a, BlockTile>);
+                        ReadStorage<'a, BlocksTile>);
     
     fn run(&mut self, data: Self::SystemData) {
         let (mut map, position, blockers) = data;

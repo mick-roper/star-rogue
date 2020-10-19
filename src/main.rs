@@ -19,6 +19,9 @@ use visibility_system::*;
 mod monster_ai_system;
 use monster_ai_system::*;
 
+mod map_indexing_system;
+use map_indexing_system::*;
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { Paused, Running }
 
@@ -35,6 +38,9 @@ impl State {
         let mut mob = MonsterAI{};
         mob.run_now(&self.ecs);
         
+        let mut map_index = MapIndexingSystem{};
+        map_index.run_now(&self.ecs);
+
         self.ecs.maintain();
     }
 }
@@ -95,7 +101,7 @@ fn build_state() -> State {
     gs.ecs.register::<ViewShed>();
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
-    gs.ecs.register::<BlockTile>();
+    gs.ecs.register::<BlocksTile>();
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();
@@ -144,7 +150,7 @@ fn build_state() -> State {
             })
             .with(Monster {})
             .with(Name { name: format!("{} #{}", &name, i) })
-            .with(BlockTile {})
+            .with(BlocksTile {})
             .build();
     }
 

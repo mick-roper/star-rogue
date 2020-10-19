@@ -37,4 +37,4 @@ pub struct Name {
 }
 
 #[derive(Component, Debug)]
-pub struct BlockTile {}
+pub struct BlocksTile {}
