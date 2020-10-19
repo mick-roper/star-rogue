@@ -117,8 +117,8 @@ impl GameState for State {
 }
 
 fn main() {
-    const MAPHEIGHT: i32 = 80;
-    const MAPWIDTH: i32 = 50;
+    const MAPWIDTH: i32 = 80;
+    const MAPHEIGHT: i32 = 43;
 
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50().with_title("Star Rogue").build();
