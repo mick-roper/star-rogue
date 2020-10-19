@@ -4,7 +4,7 @@ use specs_derive::Component;
 use std::cmp::{max, min};
 
 use super::components::{Position, ViewShed};
-use super::{Map, RunState, State, TileType};
+use super::{Map, RunState, State};
 
 #[derive(Component, Debug)]
 pub struct Player {}
