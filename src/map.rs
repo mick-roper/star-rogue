@@ -70,12 +70,20 @@ impl Map {
             }
         }
 
-        // set blocked tiles
-        for (i, tile) in map.tiles.iter_mut().enumerate() {
-            map.blocked_tiles[i] = *tile == TileType::Wall;
-        }
+        map.update_blocked_tiles();
 
         map
+    }
+
+    pub fn update_blocked_tiles(&mut self) {
+        for (i, tile) in self.tiles.iter_mut().enumerate() {
+            self.blocked_tiles[i] = *tile == TileType::Wall;
+        }
+    }
+
+    pub fn set_tile_as_blocked(&mut self, x:i32, y:i32) {
+        let idx = self.xy_idx(x, y);
+        self.blocked_tiles[idx] = true;
     }
 
     pub fn get_room(&self, index: i32) -> Rect {

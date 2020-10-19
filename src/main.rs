@@ -95,6 +95,7 @@ fn build_state() -> State {
     gs.ecs.register::<ViewShed>();
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
+    gs.ecs.register::<BlockTile>();
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();
@@ -143,6 +144,7 @@ fn build_state() -> State {
             })
             .with(Monster {})
             .with(Name { name: format!("{} #{}", &name, i) })
+            .with(BlockTile {})
             .build();
     }
 
