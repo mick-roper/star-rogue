@@ -75,13 +75,18 @@ impl Map {
         map
     }
 
+    pub fn tile_is_blocked(&self, x: i32, y: i32) -> bool {
+        let idx = self.xy_idx(x, y);
+        self.blocked_tiles[idx]
+    }
+
     pub fn update_blocked_tiles(&mut self) {
         for (i, tile) in self.tiles.iter_mut().enumerate() {
             self.blocked_tiles[i] = *tile == TileType::Wall;
         }
     }
 
-    pub fn set_tile_as_blocked(&mut self, x:i32, y:i32) {
+    pub fn set_tile_as_blocked(&mut self, x: i32, y: i32) {
         let idx = self.xy_idx(x, y);
         self.blocked_tiles[idx] = true;
     }
