@@ -1,4 +1,4 @@
-use rltk::{Point, Rltk, VirtualKeyCode, console};
+use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
 use specs_derive::Component;
 use std::cmp::{max, min};
