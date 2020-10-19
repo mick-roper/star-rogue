@@ -1,10 +1,11 @@
-use rltk::{RandomNumberGenerator, Algorithm2D, BaseMap, Point};
-use std::cmp::{min, max};
-use super::{Rect};
+use super::Rect;
+use rltk::{Algorithm2D, BaseMap, Point, RandomNumberGenerator};
+use std::cmp::{max, min};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
-    Wall, Floor
+    Wall,
+    Floor,
 }
 
 #[derive(Default)]
@@ -41,9 +42,10 @@ impl Map {
             let y = rng.roll_dice(1, height - h - 1) - 1;
             let new_room = Rect::new(x, y, w, h);
             let mut ok = true;
-            
             for other_room in map.rooms.iter() {
-                if new_room.intersect(other_room) { ok = false }
+                if new_room.intersect(other_room) {
+                    ok = false
+                }
             }
 
             if ok {
@@ -94,7 +96,9 @@ impl Map {
     }
 
     pub fn clear_visible_tiles(&mut self) {
-        for t in self.visible_tiles.iter_mut() { *t = false }
+        for t in self.visible_tiles.iter_mut() {
+            *t = false
+        }
     }
 
     pub fn mark_tile_as_visible(&mut self, x: i32, y: i32) {
@@ -107,28 +111,26 @@ impl Map {
     }
 
     fn apply_room_to_map(&mut self, room: &Rect) {
-        for y in room.y1 +1 ..= room.y2 {
-            for x in room.x1 + 1 ..= room.x2 {
+        for y in room.y1 + 1..=room.y2 {
+            for x in room.x1 + 1..=room.x2 {
                 let idx = self.xy_idx(x, y);
                 self.tiles[idx] = TileType::Floor;
             }
         }
     }
-    
     fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
-        for x in min(x1, x2) ..= max(x1, x2) {
+        for x in min(x1, x2)..=max(x1, x2) {
             let idx = self.xy_idx(x, y);
             if idx > 0 && idx < (self.width * self.height) as usize {
                 self.tiles[idx] = TileType::Floor;
             }
         }
     }
-    
     fn apply_vertical_tunnel(&mut self, y1: i32, y2: i32, x: i32) {
-        for y in min(y1, y2) ..= max(y1, y2) {
+        for y in min(y1, y2)..=max(y1, y2) {
             let idx = self.xy_idx(x, y);
             if idx > 0 && idx < (self.width * self.height) as usize {
-             self.tiles[idx] = TileType::Floor;
+                self.tiles[idx] = TileType::Floor;
             }
         }
     }
@@ -138,14 +140,11 @@ impl Map {
     }
 
     fn is_exit_valid(&self, x: i32, y: i32) -> bool {
-        if x < 1 || 
-            x > self.width-1 ||
-            y < 1 ||
-            y > self.height-1 {
-                return false;
-            }
-        
-        self.get_tile(x,y) != TileType::Wall
+        if x < 1 || x > self.width - 1 || y < 1 || y > self.height - 1 {
+            return false;
+        }
+
+        self.get_tile(x, y) != TileType::Wall
     }
 }
 
@@ -167,10 +166,18 @@ impl BaseMap for Map {
         let w = self.width as usize;
 
         // cardinal directions
-        if self.is_exit_valid(x-1, y) { exits.push((_idx -1, 1.0)) };
-        if self.is_exit_valid(x+1, y) { exits.push((_idx + 1, 1.0)) };
-        if self.is_exit_valid(x+1, y) { exits.push((_idx-w, 1.0)) };
-        if self.is_exit_valid(x+1, y) { exits.push((_idx+w, 1.0)) };
+        if self.is_exit_valid(x - 1, y) {
+            exits.push((_idx - 1, 1.0))
+        };
+        if self.is_exit_valid(x + 1, y) {
+            exits.push((_idx + 1, 1.0))
+        };
+        if self.is_exit_valid(x + 1, y) {
+            exits.push((_idx - w, 1.0))
+        };
+        if self.is_exit_valid(x + 1, y) {
+            exits.push((_idx + w, 1.0))
+        };
 
         exits
     }
