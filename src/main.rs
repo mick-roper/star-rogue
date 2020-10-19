@@ -14,7 +14,7 @@ mod map;
 use map::*;
 
 mod damage_system;
-use damage_system::*;
+use damage_system::{DamageSystem, delete_the_dead};
 
 mod map_indexing_system;
 use map_indexing_system::*;
@@ -46,6 +46,14 @@ impl State {
         
         let mut map_index = MapIndexingSystem{};
         map_index.run_now(&self.ecs);
+
+        let mut melee_combat = MeleeCombatSystem{};
+        melee_combat.run_now(&self.ecs);
+
+        let mut damage = DamageSystem{};
+        damage.run_now(&self.ecs);
+
+        delete_the_dead(&mut self.ecs);
 
         self.ecs.maintain();
     }

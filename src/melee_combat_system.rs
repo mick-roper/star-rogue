@@ -2,7 +2,7 @@ use specs::prelude::*;
 use super::*;
 use rltk::{console};
 
-struct MeleeCombatSystem {}
+pub struct MeleeCombatSystem {}
 
 impl<'a> System<'a> for MeleeCombatSystem {
     type SystemData = ( Entities<'a>,
