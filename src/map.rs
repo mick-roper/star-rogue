@@ -110,6 +110,10 @@ impl Map {
         self.tiles[self.xy_idx(x, y)]
     }
 
+    pub fn xy_idx(&self, x: i32, y: i32) -> usize {
+        (y * self.width + x) as usize
+    }
+
     fn apply_room_to_map(&mut self, room: &Rect) {
         for y in room.y1 + 1..=room.y2 {
             for x in room.x1 + 1..=room.x2 {
@@ -133,10 +137,6 @@ impl Map {
                 self.tiles[idx] = TileType::Floor;
             }
         }
-    }
-
-    fn xy_idx(&self, x: i32, y: i32) -> usize {
-        (y * self.width + x) as usize
     }
 
     fn is_exit_valid(&self, x: i32, y: i32) -> bool {
