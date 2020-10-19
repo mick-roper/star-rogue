@@ -29,11 +29,10 @@ mod vibility_system;
 use vibility_system::*;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum RunState { Paused, Running }
+pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
 
 pub struct State {
-    ecs: World,
-    runstate: RunState,
+    ecs: World
 }
 
 impl State {
@@ -63,16 +62,36 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
-        match self.runstate {
-            RunState::Running => { // update entities
+        let mut new_run_state;
+        {
+            let runstate = self.ecs.fetch::<RunState>();
+            new_run_state = *runstate;
+        }
+
+        match new_run_state {
+            RunState::PreRun => {
                 self.run_systems();
-                self.runstate = RunState::Paused;
+                new_run_state = RunState::AwaitingInput;
             }
-            _ => { // get input
-                self.runstate = player_input(self, ctx);
+            RunState::AwaitingInput => {
+                new_run_state = player_input(self, ctx);
+            }
+            RunState::PlayerTurn => {
+                self.run_systems();
+                new_run_state = RunState::MonsterTurn;
+            }
+            RunState::MonsterTurn => {
+                self.run_systems();
+                new_run_state = RunState::AwaitingInput;
             }
         }
 
+        {
+            let mut run_writer = self.ecs.write_resource::<RunState>();
+            *run_writer = new_run_state;
+        }
+
+        delete_the_dead(&mut self.ecs);
         draw_map(&self.ecs, ctx);
 
         // draw objects
@@ -105,7 +124,7 @@ fn main() {
 
 fn build_state() -> State {
     let map = Map::new(80, 50);
-    let mut gs = State { ecs: World::new(), runstate: RunState::Running };
+    let mut gs = State { ecs: World::new() };
     let mut rng = rltk::RandomNumberGenerator::new();
     // register components
     gs.ecs.register::<Position>();
@@ -176,6 +195,7 @@ fn build_state() -> State {
 
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
+    gs.ecs.insert(RunState::PreRun);
 
     gs
 }
