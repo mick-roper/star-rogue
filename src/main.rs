@@ -28,6 +28,9 @@ use monster_ai_system::*;
 mod vibility_system;
 use vibility_system::*;
 
+mod gui;
+use gui::{draw_ui};
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
 
@@ -108,6 +111,8 @@ impl GameState for State {
                 )
             }
         }
+
+        draw_ui(&self.ecs, ctx);
     }
 }
 
