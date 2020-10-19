@@ -83,10 +83,10 @@ impl Map {
         self.tile_content[idx].push(entity);
     }
 
-    // pub fn get_tile_content(&self, x: i32, y: i32) -> &Vec<Entity> {
-    //     let idx = self.xy_idx(x, y);
-    //     &self.tile_content[idx];
-    // }
+    pub fn get_tile_content(&self, x: i32, y: i32) -> &Vec<Entity> {
+        let idx = self.xy_idx(x, y);
+        &self.tile_content[idx]
+    }
 
     pub fn clear_content_index(&mut self) {
         for content in self.tile_content.iter_mut() {
