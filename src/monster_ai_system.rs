@@ -1,6 +1,6 @@
-use specs::prelude::*;
 use super::*;
-use rltk::{Point, console};
+use rltk::{console, Point};
+use specs::prelude::*;
 
 pub struct MonsterAI {}
 
@@ -9,35 +9,43 @@ impl<'a> System<'a> for MonsterAI {
     type SystemData = (
         WriteExpect<'a, Map>,
         ReadExpect<'a, Point>,
+        ReadExpect<'a, Entity>,
+        Entities<'a>,
         WriteStorage<'a, ViewShed>,
         ReadStorage<'a, Monster>,
-        ReadStorage<'a, Name>,
         WriteStorage<'a, Position>,
+        WriteStorage<'a, WantsToMelee>,
     );
+
     fn run(&mut self, data: Self::SystemData) {
-        let (mut map, player_pos, mut viewshed, monster, name, mut position) = data;
+        let (
+            mut map,
+            player_pos, 
+            player_entity,
+            entities,
+            mut viewshed,
+            monsters,
+            mut position,
+            mut wants_to_melee
+        ) = data;
 
-        for (mut viewshed, _monster, name, mut pos) in
-            (&mut viewshed, &monster, &name, &mut position).join()
-        {
-            if viewshed.visible_tiles.contains(&*player_pos) {
-                let distance =
-                    rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
-                if distance < 1.5 {
-                    console::log(&format!("{} shouts insults", name.name));
-                    return;
-                }
-
+        for (entity, mut viewshed, _monster, mut pos) in (&entities, &mut viewshed, &monsters, &mut position).join() {
+            let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+            if distance < 1.5 {
+                wants_to_melee.insert(entity, WantsToMelee { target: *player_entity }).expect("unable to insert an attack");
+            } else if viewshed.visible_tiles.contains(&*player_pos) {
                 let path = rltk::a_star_search(
-                    map.xy_idx(pos.x, pos.y) as i32,
-                    map.xy_idx(player_pos.x, player_pos.y) as i32,
-                    &mut *map,
+                    map.xy_idx(pos.x, pos.y),
+                    map.xy_idx(player_pos.x, player_pos.y),
+                    &mut *map
                 );
 
                 if path.success && path.steps.len() > 1 {
                     let (width, _) = map.get_dimensions();
+                    map.set_tile_as_unblocked(pos.x, pos.y);
                     pos.x = path.steps[1] as i32 % width;
                     pos.y = path.steps[1] as i32 / width;
+                    map.set_tile_as_blocked(pos.x, pos.y);
                     viewshed.dirty = true;
                 }
             }

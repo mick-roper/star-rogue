@@ -110,6 +110,11 @@ impl Map {
         self.blocked_tiles[idx] = true;
     }
 
+    pub fn set_tile_as_unblocked(&mut self, x: i32, y: i32) {
+        let idx = self.xy_idx(x, y);
+        self.blocked_tiles[idx] = false;
+    }
+
     pub fn get_room(&self, index: i32) -> Rect {
         self.rooms[index as usize]
     }

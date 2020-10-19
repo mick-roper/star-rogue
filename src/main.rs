@@ -122,7 +122,7 @@ fn build_state() -> State {
 
     // create the player
     let (player_x, player_y) = map.get_room(0).centre();
-    gs.ecs
+    let player_entity = gs.ecs
         .create_entity()
         .with(Position {
             x: player_x,
@@ -142,6 +142,7 @@ fn build_state() -> State {
         .with(Name{ name: "Player".to_string() })
         .with(CombatStats::new(30, 2, 5))
         .build();
+    gs.ecs.insert(player_entity);
 
     // create some enemies
     for i in 1..map.get_room_count() { // skip the first room
