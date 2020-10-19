@@ -17,3 +17,21 @@ impl <'a> System<'a> for DamageSystem {
         damage.clear();
     }
 }
+
+pub fn delete_the_dead(ecs: &mut World) {
+    let mut dead: Vec<Entity> = Vec::new();
+
+    // use a scope to make the borrow-checker happy
+    {
+        let combat_stats = ecs.read_storage::<CombatStats>();
+        let entities = ecs.entities();
+
+        for (entity, stats) in (&entities, &combat_stats).join() {
+            if stats.current_hp < 1 { dead.push(entity); }
+        }
+    }
+
+    for victim in dead {
+        ecs.delete_entity(victim).expect("Unable to delete");
+    }
+}
