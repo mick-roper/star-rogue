@@ -1,6 +1,5 @@
 use specs::prelude::*;
 use super::*;
-use rltk::{field_of_view, Point, console};
 
 pub struct DamageSystem {}
 
