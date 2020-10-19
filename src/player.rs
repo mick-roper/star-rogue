@@ -17,7 +17,7 @@ fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let map = ecs.fetch::<Map>();
 
     for (_player, pos, viewshed) in (&mut players, &mut positions, &mut viewsheds).join() {
-        if map.tile_is_blocked(pos.x + delta_x, pos.y + delta_y) {
+        if !map.tile_is_blocked(pos.x + delta_x, pos.y + delta_y) {
             let (width, height) = map.get_dimensions();
             pos.x = min(width - 1, max(0, pos.x + delta_x));
             pos.y = min(height - 1, max(0, pos.y + delta_y));
