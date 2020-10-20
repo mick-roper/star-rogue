@@ -136,7 +136,6 @@ fn main() {
 fn build_state(width: i32, height: i32) -> State {
     let map = Map::new(width, height);
     let mut gs = State { ecs: World::new() };
-    let mut rng = rltk::RandomNumberGenerator::new();
     // register components
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
@@ -156,6 +155,7 @@ fn build_state(width: i32, height: i32) -> State {
 
     // create the player
     let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
+    gs.ecs.insert(player_entity);
 
     // create some enemies
     for i in 1..map.get_room_count() { // skip the first room
