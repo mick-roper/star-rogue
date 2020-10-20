@@ -148,6 +148,8 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<SufferDamage>();
+    gs.ecs.register::<Item>();
+    gs.ecs.register::<Potion>();
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
