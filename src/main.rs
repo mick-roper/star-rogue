@@ -206,6 +206,7 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(GameLog{ entries: vec!["Welcome to Star Rogue!".to_string()] });
+    gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
     gs
 }
