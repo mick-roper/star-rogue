@@ -34,6 +34,8 @@ use vibility_system::*;
 mod gui;
 use gui::{draw_ui};
 
+mod spawner;
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
 
@@ -148,65 +150,23 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<SufferDamage>();
 
-    // create the player
     let (player_x, player_y) = map.get_room(0).centre();
-    let player_entity = gs.ecs
-        .create_entity()
-        .with(Position {
-            x: player_x,
-            y: player_y,
-        })
-        .with(Renderable {
-            glyph: rltk::to_cp437('@'),
-            foreground: RGB::named(rltk::YELLOW),
-            background: RGB::named(rltk::BLACK),
-        })
-        .with(Player {})
-        .with(ViewShed {
-            visible_tiles: Vec::new(),
-            range: 8,
-            dirty: true,
-        })
-        .with(Name{ name: "Player".to_string() })
-        .with(CombatStats::new(30, 2, 5))
-        .build();
-    gs.ecs.insert(player_entity);
+
+    gs.ecs.insert(rltk::RandomNumberGenerator::new());
+
+    // create the player
+    let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
 
     // create some enemies
     for i in 1..map.get_room_count() { // skip the first room
         let (x, y) = map.get_room(i).centre();
-        let glyph: u8;
-        let name: String;
-        match rng.roll_dice(1, 2) {
-            1 => { glyph = rltk::to_cp437('g'); name = "Goblin".to_string(); }
-            _ => { glyph = rltk::to_cp437('o'); name = "Orc".to_string(); }
-        };
-
-        gs.ecs
-            .create_entity()
-            .with(Position { x, y })
-            .with(Renderable {
-                glyph: glyph,
-                foreground: RGB::named(rltk::RED),
-                background: RGB::named(rltk::BLACK),
-            })
-            .with(ViewShed {
-                visible_tiles: Vec::new(),
-                range: 8,
-                dirty: true,
-            })
-            .with(Monster {})
-            .with(Name { name: format!("{} #{}", &name, i) })
-            .with(BlocksTile {})
-            .with(CombatStats::new(16, 1, 4))
-            .build();
+        spawner::random_monster(&mut gs.ecs, x, y);
     }
 
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(GameLog{ entries: vec!["Welcome to Star Rogue!".to_string()] });
-    gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
     gs
 }
