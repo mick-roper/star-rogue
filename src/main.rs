@@ -149,9 +149,9 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<SufferDamage>();
 
-    let (player_x, player_y) = map.get_room(0).centre();
-
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
+
+    let (player_x, player_y) = map.get_room(0).centre();
 
     // create the player
     let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
@@ -159,8 +159,8 @@ fn build_state(width: i32, height: i32) -> State {
 
     // create some enemies
     for i in 1..map.get_room_count() { // skip the first room
-        let (x, y) = map.get_room(i).centre();
-        spawner::random_monster(&mut gs.ecs, x, y);
+        let room = map.get_room(i);
+        spawner::spawn_room(&mut gs.ecs, width, &room);
     }
 
     gs.ecs.insert(map);

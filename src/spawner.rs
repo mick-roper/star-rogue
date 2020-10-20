@@ -2,6 +2,9 @@ use rltk::{RGB, RandomNumberGenerator};
 use specs::prelude::*;
 use super::*;
 
+const MAX_MONSTERS_PER_ROOM: i32 = 4;
+const MAX_ITEMS_PER_ROOM: i32 = 2;
+
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     ecs
         .create_entity()
@@ -31,6 +34,34 @@ pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
     match roll {
         1 => { orc(ecs, x, y) }
         _ => { goblin(ecs, x, y) }
+    }
+}
+
+pub fn spawn_room(ecs: &mut World, map_width: i32, room: &Rect) {
+    let mut monster_spawn_points: Vec<usize> = Vec::new();
+
+    {
+        let mut rng = ecs.write_resource::<RandomNumberGenerator>();
+        let num_monsters = rng.roll_dice(1, MAX_MONSTERS_PER_ROOM + 2) - 3;
+
+        for _i in 0..num_monsters {
+            let mut added = false;
+            while !added {
+                let x = room.x1 + rng.roll_dice(1, i32::abs(room.x2 - room.x1));
+                let y = room.y1 + rng.roll_dice(1, i32::abs(room.y2 - room.y1));
+                let idx = ((y * map_width) + x) as usize;
+                if !monster_spawn_points.contains(&idx) {
+                    monster_spawn_points.push(idx);
+                    added = true;
+                }
+            }
+        }
+    }
+
+    for idx in monster_spawn_points.iter() {
+        let x = *idx % (map_width as usize);
+        let y = *idx / (map_width as usize);
+        random_monster(ecs, x as i32, y as i32);
     }
 }
 
