@@ -156,6 +156,8 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<Potion>();
+    gs.ecs.register::<InBackPack>();
+    gs.ecs.register::<WantsToPickupItem>();
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
