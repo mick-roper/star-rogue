@@ -86,3 +86,14 @@ pub struct Item {}
 pub struct Potion {
     pub heal_amount: i32
 }
+
+#[derive(Component, Debug, Clone)]
+pub struct InBackPack {
+    pub owner: Entity
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToPickupItem {
+    pub collected_by: Entity,
+    pub item: Entity,
+}

@@ -31,6 +31,9 @@ use monster_ai_system::*;
 mod vibility_system;
 use vibility_system::*;
 
+mod item_collection_system;
+use item_collection_system::*;
+
 mod gui;
 use gui::{draw_ui};
 
@@ -59,6 +62,9 @@ impl State {
 
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
+
+        let mut pickup = ItemCollectionSystem{};
+        pickup.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
