@@ -40,7 +40,7 @@ use gui::{draw_ui};
 mod spawner;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
+pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory }
 
 pub struct State {
     ecs: World
@@ -95,6 +95,11 @@ impl GameState for State {
             RunState::MonsterTurn => {
                 self.run_systems();
                 new_run_state = RunState::AwaitingInput;
+            }
+            RunState::ShowInventory => {
+                if gui::show_inventory(self, ctx) == gui::ItemMenuResult::Cancel {
+                    new_run_state = RunState::AwaitingInput;
+                }
             }
         }
 

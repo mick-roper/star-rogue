@@ -1,6 +1,9 @@
-use rltk::{RGB, Rltk, Console};
+use rltk::{RGB, Rltk, Console, VirtualKeyCode};
 use specs::prelude::*;
 use super::*;
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum ItemMenuResult { Cancel, NoResponse, Selected }
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -22,6 +25,20 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     }
 
     draw_tooltips(ecs, ctx);
+}
+
+pub fn show_inventory(ecs: &mut State, ctx: &mut Rltk) -> ItemMenuResult {
+    // todo: implement logic
+
+    match ctx.key {
+        None => ItemMenuResult::NoResponse,
+        Some(key) => {
+            match key {
+                VirtualKeyCode::Escape => { ItemMenuResult::Cancel }
+                _ => ItemMenuResult::NoResponse
+            }
+        }
+    }
 }
 
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
