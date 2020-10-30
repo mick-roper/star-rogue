@@ -181,6 +181,7 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<InBackPack>();
     gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToDrinkPotion>();
+    gs.ecs.register::<WantsToDropItem>();
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
