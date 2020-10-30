@@ -34,6 +34,9 @@ use vibility_system::*;
 mod item_collection_system;
 use item_collection_system::*;
 
+mod inventory_system;
+use inventory_system::*;
+
 mod gui;
 use gui::{draw_ui};
 
@@ -65,6 +68,9 @@ impl State {
 
         let mut pickup = ItemCollectionSystem{};
         pickup.run_now(&self.ecs);
+
+        let mut potions = PotionUseSystem{};
+        potions.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -173,6 +179,7 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<Potion>();
     gs.ecs.register::<InBackPack>();
     gs.ecs.register::<WantsToPickupItem>();
+    gs.ecs.register::<WantsToDrinkPotion>();
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
