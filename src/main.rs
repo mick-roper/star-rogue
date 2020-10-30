@@ -43,7 +43,7 @@ use gui::{draw_ui};
 mod spawner;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory }
+pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory, ShowDropItem }
 
 pub struct State {
     ecs: World
@@ -71,6 +71,9 @@ impl State {
 
         let mut potions = PotionUseSystem{};
         potions.run_now(&self.ecs);
+
+        let mut drop_items = ItemDropSystem{};
+        drop_items.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
