@@ -7,7 +7,7 @@ impl<'a> System<'a> for PotionUseSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = ( ReadExpect<'a, Entity>,
                         WriteExpect<'a, GameLog>,
-                        Entity<'a>,
+                        Entities<'a>,
                         WriteStorage<'a, WantsToDrinkPotion>,
                         ReadStorage<'a, Name>,
                         ReadStorage<'a, Potion>,
@@ -19,18 +19,18 @@ impl<'a> System<'a> for PotionUseSystem {
             player_entity, 
             mut gamelog, 
             entities, 
-            mut wants_drink, 
+            wants_drink, 
             names, 
             potions, 
             mut combat_stats
         ) = data;
 
-        for (entity, drink, stats) in (&entites, &wants_drink, &mut combat_stats).join() {
+        for (entity, drink, stats) in (&entities, &wants_drink, &mut combat_stats).join() {
             let potion = potions.get(drink.potion);
             match potion {
                 None => {}
                 Some(potion) => {
-                    stats.current_hp = i32::min(stats.max_hp, stats.current_hp + potion.heal_amout);
+                    stats.current_hp = i32::min(stats.max_hp, stats.current_hp + potion.heal_amount);
                     if entity == *player_entity {
                         gamelog.entries.push(format!("You dring the {}, regaining {} hp", names.get(drink.potion).unwrap().name, potion.heal_amount));
                     }
