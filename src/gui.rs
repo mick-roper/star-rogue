@@ -27,8 +27,33 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_tooltips(ecs, ctx);
 }
 
-pub fn show_inventory(ecs: &mut State, ctx: &mut Rltk) -> ItemMenuResult {
-    // todo: implement logic
+pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> ItemMenuResult {
+    let player_entity = gs.ecs.fetch::<Entity>();
+    let names = gs.ecs.read_storage::<Name>();
+    let backpack = gs.ecs.read_storage::<InBackPack>();
+
+    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
+    let count = inventory.count();
+
+    let white = RGB::named(rltk::WHITE);
+    let black = RGB::named(rltk::BLACK);
+    let yellow = RGB::named(rltk::YELLOW);
+
+    let mut y = (25 - (count / 2)) as i32;
+    ctx.draw_box(15, y-2, 31, (count + 3) as i32, white, black);
+    ctx.print_color(18, y-2, yellow, black, "Inventory");
+    ctx.print_color(18, y+count as i32 + 1, yellow, black, "ESCAPE to cancel");
+
+    let mut j = 0;
+    for (_pack, name) in (&backpack, &names).join().filter(|item| item.0.owner == *player_entity) {
+        ctx.set(17, y, white, black, rltk::to_cp437('('));
+        ctx.set(17, y, yellow, black, 97+j as u8);
+        ctx.set(19, y, white, black, rltk::to_cp437(')'));
+
+        ctx.print(21, y, &name.name.to_string());
+        y += 1;
+        j += 1;
+    }
 
     match ctx.key {
         None => ItemMenuResult::NoResponse,
