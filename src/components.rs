@@ -13,6 +13,7 @@ pub struct Renderable {
     pub glyph: u8,
     pub foreground: RGB,
     pub background: RGB,
+    pub render_order: i32,
 }
 
 #[derive(Component)]

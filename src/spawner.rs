@@ -13,6 +13,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             glyph: rltk::to_cp437('@'),
             foreground: RGB::named(rltk::YELLOW),
             background: RGB::named(rltk::BLACK),
+            render_order: 0,
         })
         .with(Player{})
         .with(ViewShed{ 
@@ -96,6 +97,7 @@ fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: u8, name: S) {
             glyph,
             foreground: RGB::named(rltk::RED),
             background: RGB::named(rltk::BLACK),
+            render_order: 1,
         })
         .with(ViewShed{ 
             visible_tiles: Vec::new(),
@@ -116,6 +118,7 @@ fn health_potion(ecs: &mut World, x: i32, y: i32) {
             glyph: rltk::to_cp437('i'),
             foreground: RGB::named(rltk::MAGENTA),
             background: RGB::named(rltk::BLACK),
+            render_order: 2,
         })
         .with(Name{ name: "Health Potion".to_string() })
         .with(Item {})
