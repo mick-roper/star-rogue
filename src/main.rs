@@ -97,8 +97,18 @@ impl GameState for State {
                 new_run_state = RunState::AwaitingInput;
             }
             RunState::ShowInventory => {
-                if gui::show_inventory(self, ctx) == gui::ItemMenuResult::Cancel {
-                    new_run_state = RunState::AwaitingInput;
+                let result = gui::show_inventory(self, ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => new_run_state = RunState::AwaitingInput,
+                    gui::ItemMenuResult::NoResponse => {},
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
+                        let names = self.ecs.read_storage::<Name>();
+                        let mut gamelog = self.ecs.fetch_mut::<game_log::GameLog>();
+                        let message = format!("You try to use {}, but it hasn't been written yet", names.get(item_entity).unwrap().name);
+                        gamelog.entries.push(message);
+                        new_run_state = RunState::AwaitingInput;
+                    }
                 }
             }
         }
