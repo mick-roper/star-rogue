@@ -83,6 +83,10 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
+        delete_the_dead(&mut self.ecs);
+        draw_map(&self.ecs, ctx);
+        draw_ui(&self.ecs, ctx);
+
         let mut new_run_state;
         {
             let runstate = self.ecs.fetch::<RunState>();
@@ -141,9 +145,6 @@ impl GameState for State {
             *run_writer = new_run_state;
         }
 
-        delete_the_dead(&mut self.ecs);
-        draw_map(&self.ecs, ctx);
-
         // draw objects
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
@@ -151,7 +152,6 @@ impl GameState for State {
 
         let mut data = (&positions, &renderables).join().collect::<Vec<_>>();
         data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
-
         for (pos, render) in data.iter() {
             if map.tile_is_visible(pos.x, pos.y) {
                 ctx.set(
@@ -163,8 +163,6 @@ impl GameState for State {
                 )
             }
         }
-
-        draw_ui(&self.ecs, ctx);
     }
 }
 
