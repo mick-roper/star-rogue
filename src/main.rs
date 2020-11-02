@@ -228,6 +228,7 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<Consumable>();
     gs.ecs.register::<Ranged>();
     gs.ecs.register::<InflictsDamage>();
+    gs.ecs.register::<AreaOfEffect>();
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
