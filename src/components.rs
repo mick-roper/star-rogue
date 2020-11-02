@@ -1,6 +1,6 @@
 use rltk::{RGB, Point};
 use specs::prelude::*;
-use specs_derive::Component;
+use specs_derive::{Component};
 
 #[derive(Component)]
 pub struct Position {
@@ -99,7 +99,7 @@ pub struct WantsToPickupItem {
     pub item: Entity,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone)]
 pub struct WantsToUseItem {
     pub item: Entity,
     pub target: Option<rltk::Point>,
