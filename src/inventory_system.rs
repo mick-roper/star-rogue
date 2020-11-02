@@ -16,6 +16,7 @@ impl<'a> System<'a> for ItemUseSystem {
                         WriteStorage<'a, CombatStats>,
                         WriteStorage<'a, SufferDamage>,
                         ReadStorage<'a, AreaOfEffect>,
+                        WriteStorage<'a, Confusion>,
                         ReadExpect<'a, Map>,
                     );
 
@@ -32,6 +33,7 @@ impl<'a> System<'a> for ItemUseSystem {
             mut combat_stats,
             mut suffer_damage,
             aoe,
+            mut confused,
             map
         ) = data;
 
@@ -93,6 +95,28 @@ impl<'a> System<'a> for ItemUseSystem {
                         }
                     }
                 }
+            }
+
+            // CONFUSION
+            let mut add_confusion = Vec::new();
+            {
+                let causes_confusion = confused.get(use_item.item);
+                match causes_confusion {
+                    None => {}
+                    Some(confusion) => {
+                        for mob in targets.iter() {
+                            add_confusion.push((*mob, confusion.turns));
+                            if entity == *player_entity {
+                                let mob_name = names.get(*mob).unwrap();
+                                let item_name = names.get(use_item.item).unwrap();
+                                gamelog.entries.push(format!("You use {} on {}, confusing them.", item_name.name, mob_name.name));
+                            }
+                        }
+                    }
+                }
+            }
+            for mob in add_confusion.iter() {
+                confused.insert(mob.0, Confusion{ turns: mob.1 }).expect("Unable to insert status");
             }
 
             // CLEANUP
