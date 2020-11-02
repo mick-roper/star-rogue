@@ -22,6 +22,10 @@ pub enum MainMenuResult {
     Selected { selected: MainMenuSelection },
 }
 
+pub fn main_menu(ecs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
+    MainMenuResult::NoSelection{selected: MainMenuSelection::Quit}
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.draw_box(
         0,
