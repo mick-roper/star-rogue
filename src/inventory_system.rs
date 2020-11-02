@@ -15,6 +15,7 @@ impl<'a> System<'a> for ItemUseSystem {
                         ReadStorage<'a, InflictsDamage>,
                         WriteStorage<'a, CombatStats>,
                         WriteStorage<'a, SufferDamage>,
+                        ReadStorage<'a, AreaOfEffect>,
                         ReadExpect<'a, Map>,
                     );
 
@@ -30,47 +31,76 @@ impl<'a> System<'a> for ItemUseSystem {
             inflict_damage,
             mut combat_stats,
             mut suffer_damage,
+            aoe,
             map
         ) = data;
 
-        for (entity, use_item, stats) in (&entities, &use_item, &mut combat_stats).join() {
-            let item_heals = healing.get(use_item.item);
-            let mut used_item = false;
-            match item_heals {
-                None => {}
-                Some(healer) => {
-                    stats.current_hp = i32::min(stats.max_hp, stats.current_hp + healer.heal_amount);
-                    if entity == *player_entity {
-                        gamelog.entries.push(format!("You drink the {}, regaining {} hp", names.get(use_item.item).unwrap().name, healer.heal_amount));
+        for (entity, use_item) in (&entities, &use_item).join() {
+            // TARGETING
+            let mut targets: Vec<Entity> = Vec::new();
+            match use_item.target {
+                None => { targets.push(*player_entity); }
+                Some(target) => {
+                    let area_effect = aoe.get(use_item.item);
+                    match area_effect {
+                        None => {
+                            for mob in map.get_tile_content(target.x, target.y).iter () {
+                                targets.push(*mob);
+                            }
+                        }
+                        Some(area_effect) => {
+                            let mut blast_tiles = rltk::field_of_view(target, area_effect.radius, &*map);
+                            let (map_width, map_height) = map.get_dimensions();
+                            blast_tiles.retain(|p| p.x > 0 && p.x < map_width-1 && p.y > 0 && p.y < map_height -1);
+                            for tile in blast_tiles.iter() {
+                                for mob in map.get_tile_content(tile.x, tile.y).iter() {
+                                    targets.push(*mob);
+                                }
+                            }
+                        }
                     }
-                    used_item = true;
                 }
             }
 
+            // HEALING
+            let item_heals = healing.get(use_item.item);
+            match item_heals {
+                None => {}
+                Some(healer) => {
+                    for target in targets.iter() {
+                        let stats = combat_stats.get_mut(*target);
+                        if let Some(stats) = stats {
+                            stats.current_hp = i32::min(stats.max_hp, stats.current_hp + healer.heal_amount);
+                            if entity == *player_entity {
+                                gamelog.entries.push(format!("You drink the {}, regaining {} hp", names.get(use_item.item).unwrap().name, healer.heal_amount));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // DAMAGE
             let item_damages = inflict_damage.get(use_item.item);
             match item_damages {
                 None => {}
                 Some(damage) => {
-                    let target_point = use_item.target.unwrap();
-                    for mob in map.get_tile_content(target_point.x, target_point.y).iter() {
+                    for mob in targets.iter() {
                         SufferDamage::new_damage(&mut suffer_damage, *mob, damage.damage);
                         if entity == *player_entity {
                             let mob_name = names.get(*mob).unwrap();
                             let item_name = names.get(use_item.item).unwrap();
                             gamelog.entries.push(format!("You use {} on {}, inflicting {} hp of damage.", item_name.name, mob_name.name, damage.damage));
                         }
-                        used_item = true;
                     }
                 }
             }
 
+            // CLEANUP
             let consumable = consumables.get(use_item.item);
             match consumable {
                 None => {}
                 Some(_) => {
-                    if used_item {
-                        entities.delete(use_item.item).expect("Delete failed!")
-                    }
+                    entities.delete(use_item.item).expect("Delete failed!")
                 }
             }
         }
