@@ -1,6 +1,5 @@
 use super::*;
 use rltk::{Console, Rltk, VirtualKeyCode, RGB};
-use specs::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum ItemMenuResult {
@@ -22,8 +21,70 @@ pub enum MainMenuResult {
     Selected { selected: MainMenuSelection },
 }
 
-pub fn main_menu(ecs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
-    MainMenuResult::NoSelection{selected: MainMenuSelection::Quit}
+pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
+    let run_state = gs.ecs.fetch::<RunState>();
+
+    let yellow = RGB::named(rltk::YELLOW);
+    let black = RGB::named(rltk::BLACK);
+    let magenta = RGB::named(rltk::MAGENTA);
+    let white = RGB::named(rltk::WHITE);
+
+    ctx.print_color_centered(15, yellow, black, "Star Rogue");
+
+    if let RunState::MainMenu{ menu_selection: selection } = *run_state {
+        if selection == MainMenuSelection::NewGame {
+            ctx.print_color_centered(24, magenta, black, "New Game");
+        } else {
+            ctx.print_color_centered(24, white, black, "New Game");
+        }
+
+        if selection == MainMenuSelection::LoadGame {
+            ctx.print_color_centered(25, magenta, black, "Load Game");
+        } else {
+            ctx.print_color_centered(25, white, black, "Load Game");
+        }
+
+        if selection == MainMenuSelection::Quit {
+            ctx.print_color_centered(26, magenta, black, "Quit Game");
+        } else {
+            ctx.print_color_centered(26, white, black, "Quit Game");
+        }
+
+        match ctx.key {
+            None => return MainMenuResult::NoSelection{ selected: selection },
+            Some(key) => {
+                match key {
+                    VirtualKeyCode::Escape => { return MainMenuResult::NoSelection{ selected: selection } }
+
+                    VirtualKeyCode::Up => {
+                        let new_selection;
+                        match selection {
+                            MainMenuSelection::NewGame => new_selection = MainMenuSelection::Quit,
+                            MainMenuSelection::LoadGame => new_selection = MainMenuSelection::NewGame,
+                            MainMenuSelection::Quit => new_selection = MainMenuSelection::LoadGame
+                        }
+                        return MainMenuResult::NoSelection{ selected: new_selection }
+                    }
+
+                    VirtualKeyCode::Down => {
+                        let new_selection;
+                        match selection {
+                            MainMenuSelection::NewGame => new_selection = MainMenuSelection::LoadGame,
+                            MainMenuSelection::LoadGame => new_selection = MainMenuSelection::Quit,
+                            MainMenuSelection::Quit => new_selection = MainMenuSelection::NewGame
+                        }
+                        return MainMenuResult::NoSelection{ selected: new_selection }
+                    }
+
+                    VirtualKeyCode::Return => return MainMenuResult::Selected{ selected: selection },
+
+                    _ => return MainMenuResult::NoSelection{ selected: selection }
+                }
+            }
+        }
+    }
+
+    MainMenuResult::NoSelection{selected: MainMenuSelection::NewGame}
 }
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {

@@ -104,6 +104,48 @@ impl GameState for State {
         ctx.cls();
 
         match new_run_state {
+            RunState::MainMenu { .. } => {
+                let result = gui::main_menu(self, ctx);
+                match result {
+                    gui::MainMenuResult::NoSelection{ selected } => new_run_state = RunState::MainMenu{ menu_selection: selected },
+                    gui::MainMenuResult::Selected{ selected } => {
+                        match selected {
+                            gui::MainMenuSelection::NewGame => new_run_state = RunState::PreRun,
+                            gui::MainMenuSelection::LoadGame => new_run_state = RunState::PreRun,
+                            gui::MainMenuSelection::Quit => { ::std::process::exit(0); }
+                        }
+                    }
+                }
+            }
+            _ => {
+                draw_map(&self.ecs, ctx);
+
+                {
+                    // draw objects
+                    let positions = self.ecs.read_storage::<Position>();
+                    let renderables = self.ecs.read_storage::<Renderable>();
+                    let map = self.ecs.fetch::<Map>();
+
+                    let mut data = (&positions, &renderables).join().collect::<Vec<_>>();
+                    data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
+                    for (pos, render) in data.iter() {
+                        if map.tile_is_visible(pos.x, pos.y) {
+                            ctx.set(
+                                pos.x,
+                                pos.y,
+                                render.foreground,
+                                render.background,
+                                render.glyph,
+                            )
+                        }
+                    }
+
+                    draw_ui(&self.ecs, ctx);
+                }
+            }
+        }
+
+        match new_run_state {
             RunState::PreRun => {
                 self.run_systems();
                 self.ecs.maintain();
@@ -201,31 +243,6 @@ impl GameState for State {
                             gui::MainMenuSelection::Quit => { ::std::process::exit(0); }
                         }
                     }
-                }
-            }
-            _ => {
-                draw_map(&self.ecs, ctx);
-                {
-                    // draw objects
-                    let positions = self.ecs.read_storage::<Position>();
-                    let renderables = self.ecs.read_storage::<Renderable>();
-                    let map = self.ecs.fetch::<Map>();
-
-                    let mut data = (&positions, &renderables).join().collect::<Vec<_>>();
-                    data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
-                    for (pos, render) in data.iter() {
-                        if map.tile_is_visible(pos.x, pos.y) {
-                            ctx.set(
-                                pos.x,
-                                pos.y,
-                                render.foreground,
-                                render.background,
-                                render.glyph,
-                            )
-                        }
-                    }
-
-                    draw_ui(&self.ecs, ctx);
                 }
             }
         }
