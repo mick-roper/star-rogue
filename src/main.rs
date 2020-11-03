@@ -1,3 +1,5 @@
+extern crate serde;
+
 use rltk::{Console, GameState, Point, Rltk, RGB};
 use specs::prelude::*;
 
@@ -247,6 +249,10 @@ impl GameState for State {
                 }
             }
             RunState::SaveGame => {
+                let map = self.ecs.fetch::<Map>();
+                let data = serde_json::to_string(&*map).unwrap();
+                println!("{}", data);
+
                 new_run_state = RunState::MainMenu{ menu_selection: gui::MainMenuSelection::LoadGame }
             }
         }

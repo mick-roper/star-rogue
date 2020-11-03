@@ -2,14 +2,15 @@ use super::Rect;
 use rltk::{Algorithm2D, BaseMap, Point, RandomNumberGenerator};
 use std::cmp::{max, min};
 use specs::{Entity};
+use serde::{Serialize, Deserialize};
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
     Wall,
     Floor,
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize, Clone)]
 pub struct Map {
     width: i32,
     height: i32,
@@ -18,6 +19,9 @@ pub struct Map {
     revealed_tiles: Vec<bool>,
     visible_tiles: Vec<bool>,
     blocked_tiles: Vec<bool>,
+
+    #[serde(skip_serializing)]
+    #[serde(skip_deserializing)]
     tile_content: Vec<Vec<Entity>>,
 }
 
