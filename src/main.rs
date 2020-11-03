@@ -40,6 +40,8 @@ use item_collection_system::*;
 mod inventory_system;
 use inventory_system::*;
 
+mod saveload_system;
+
 mod gui;
 use gui::draw_ui;
 
@@ -250,10 +252,7 @@ impl GameState for State {
                 }
             }
             RunState::SaveGame => {
-                let map = self.ecs.fetch::<Map>();
-                let data = serde_json::to_string(&*map).unwrap();
-                println!("{}", data);
-
+                saveload_system::save_game(&mut self.ecs);
                 new_run_state = RunState::MainMenu{ menu_selection: gui::MainMenuSelection::LoadGame }
             }
         }
