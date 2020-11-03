@@ -2,6 +2,7 @@ extern crate serde;
 
 use rltk::{Console, GameState, Point, Rltk, RGB};
 use specs::prelude::*;
+use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 mod components;
 use components::*;
@@ -304,8 +305,10 @@ fn build_state(width: i32, height: i32) -> State {
     gs.ecs.register::<InflictsDamage>();
     gs.ecs.register::<AreaOfEffect>();
     gs.ecs.register::<Confusion>();
+    gs.ecs.register::<SimpleMarker<SerializeMe>>();
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
+    gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
     let (player_x, player_y) = map.get_room(0).centre();
 
