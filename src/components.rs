@@ -1,8 +1,11 @@
-use rltk::{RGB, Point};
 use specs::prelude::*;
-use specs_derive::{Component};
+use specs_derive::*;
+use rltk::{RGB, Point};
+use serde::{Serialize, Deserialize};
+use specs::saveload::{Marker, ConvertSaveload};
+use specs::error::NoError;
 
-#[derive(Component)]
+#[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {
     pub x: i32, 
     pub y: i32,
