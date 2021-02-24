@@ -252,7 +252,6 @@ impl GameState for State {
                 }
             }
             RunState::SaveGame => {
-                saveload_system::save_game(&mut self.ecs);
                 new_run_state = RunState::MainMenu{ menu_selection: gui::MainMenuSelection::LoadGame }
             }
         }
